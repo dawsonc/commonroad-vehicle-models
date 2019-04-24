@@ -7,7 +7,7 @@ function f = vehicleDynamics_KS(x,u,p)
 % Inputs:
 %    x - vehicle state vector
 %    u - vehicle input vector
-%    p - vehicle parameter vector
+%    p - vehicle parameter structure
 %
 % Outputs:
 %    f - right-hand side of differential equations
@@ -22,7 +22,7 @@ function f = vehicleDynamics_KS(x,u,p)
 
 % Author:       Matthias Althoff
 % Written:      12-January-2017
-% Last update:  ---
+% Last update:  15-December-2017
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -39,6 +39,12 @@ l = p.a + p.b;
 
 %u1 = v_delta steering angle velocity of front wheels
 %u2 = ax longitudinal acceleration
+
+%consider steering constraints
+u(1) = steeringConstraints(x(3),u(1),p.steering);
+
+%consider acceleration constraints
+u(2) = accelerationConstraints(x(4),u(2),p.longitudinal);
 
 %system dynamics
 f(1,1) = x(4)*cos(x(5));

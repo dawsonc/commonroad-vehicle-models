@@ -20,7 +20,7 @@ function testVehicle()
 
 % Author:       Matthias Althoff
 % Written:      11-January-2017
-% Last update:  ---
+% Last update:  16-December-2017
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -33,26 +33,17 @@ g = 9.81; %[m/s^2]
 tStart = 0; %start time
 tFinal = 1; %start time
 
-% vel0 = 15;
-% Psi0 = 0.1;
-% dotPsi0 = -0.1;
-% beta0 = 0.05;
-% sy0 = 1;
+delta0 = 0;
 vel0 = 15;
 Psi0 = 0;
 dotPsi0 = 0;
 beta0 = 0;
 sy0 = 0;
-initialState = [0,sy0,vel0,Psi0,dotPsi0,beta0]; %initial state for simulation
-x0_KS = init_KS(initialState, p); %initial state for kinematic single-track model
-x0_ST = init_ST(initialState, p); %initial state for single-track model
+initialState = [0,sy0,delta0,vel0,Psi0,dotPsi0,beta0]; %initial state for simulation
+x0_KS = init_KS(initialState); %initial state for kinematic single-track model
+x0_ST = init_ST(initialState); %initial state for single-track model
 x0_MB = init_MB(initialState, p); %initial state for multi-body model
 %--------------------------------------------------------------------------
-
-% %specify continuous dynamics-----------------------------------------------
-% carDyn = vehicleSys('vehicleDynamics',28,2,@vehicleDynamics_MB,[]); %initialize car
-% carDyn_bicycle = vehicleSys('vehicleDynamics_bicycle',6,2,@DOTBicycleDynamics,[]); %initialize car
-% %--------------------------------------------------------------------------
 
 % %generate ode options
 % stepsizeOptions = odeset('MaxStep',options.tStart-options.tFinal);
@@ -90,11 +81,21 @@ plot(t_brake,x_brake(:,9));
 v_delta = 0.15;
 acc = 0.63*g;
 u = [v_delta acc];
-%simulate car
+
+%simulate full car
 [t_acc,x_acc] = ode45(getfcn(@vehicleDynamics_MB,u,p),[tStart, tFinal],x0_MB);
+
+%simulate single-track model
+[~,x_acc_st] = ode45(getfcn(@vehicleDynamics_ST,u,p),[tStart, tFinal],x0_ST);
+
+%simulate kinematic single-track model
+[~,x_acc_ks] = ode45(getfcn(@vehicleDynamics_KS,u,p),[tStart, tFinal],x0_KS);
+
 figure %position
 hold on
 plot(x_acc(:,1),x_acc(:,2))
+plot(x_acc_st(:,1),x_acc_st(:,2))
+plot(x_acc_ks(:,1),x_acc_ks(:,2))
 figure % velocity
 plot(t_acc,x_acc(:,4));
 figure % wheel spin

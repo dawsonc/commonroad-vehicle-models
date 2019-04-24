@@ -1,3 +1,5 @@
+from steeringParameters import SteeringParameters
+from longitudinalParameters import LongitudinalParameters
 from tireParameters import TireParameters
 
 class VehicleParameters():
@@ -5,6 +7,12 @@ class VehicleParameters():
         #vehicle body dimensions
         self.l = []
         self.w = []
+
+	#steering parameters 
+        self.steering = SteeringParameters()
+
+	#longitudinal parameters 
+        self.longitudinal = LongitudinalParameters()
         
         #masses
         self.m = []

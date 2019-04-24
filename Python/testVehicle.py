@@ -33,19 +33,15 @@ g = 9.81  #[m/s^2]
 tStart = 0  #start time
 tFinal = 1  #start time
 
-# vel0 = 15 
-# Psi0 = 0.1 
-# dotPsi0 = -0.1 
-# beta0 = 0.05 
-# sy0 = 1 
+delta0 = 0
 vel0 = 15 
 Psi0 = 0 
 dotPsi0 = 0 
 beta0 = 0 
 sy0 = 0 
-initialState = [0,sy0,vel0,Psi0,dotPsi0,beta0]  #initial state for simulation
-x0_KS = init_KS(initialState, p)  #initial state for kinematic single-track model
-x0_ST = init_ST(initialState, p)  #initial state for single-track model
+initialState = [0,sy0,delta0,vel0,Psi0,dotPsi0,beta0]  #initial state for simulation
+x0_KS = init_KS(initialState)  #initial state for kinematic single-track model
+x0_ST = init_ST(initialState)  #initial state for single-track model
 x0_MB = init_MB(initialState, p)  #initial state for multi-body model
 #--------------------------------------------------------------------------
 #

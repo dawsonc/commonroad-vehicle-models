@@ -21,7 +21,8 @@ def parameters_vehicle2():
 
     # Author:       Matthias Althoff
     # Written:      15-January-2017
-    # Last update:  05-July-2017
+    # Last update:05-July-2017
+    #                     16-December-2017
     # Last revision:---
 
     #------------- BEGIN CODE --------------
@@ -32,6 +33,18 @@ def parameters_vehicle2():
     #vehicle body dimensions
     p.l = 4.508  #vehicle length [m] (with US bumpers)
     p.w = 1.610  #vehicle width [m]
+    
+    #steering constraints
+    p.steering.min = -1.066  #minimum steering angle [rad]
+    p.steering.max = 1.066  #maximum steering angle [rad]
+    p.steering.v_min = -0.4  #minimum steering velocity [rad/s]
+    p.steering.v_max = 0.4  #maximum steering velocity [rad/s]
+
+    #longitudinal constraints
+    p.longitudinal.v_min = -13.6  #minimum velocity [m/s]
+    p.longitudinal.v_max = 50.8  #minimum velocity [m/s]
+    p.longitudinal.v_switch = 7.319  #switching velocity [m/s]
+    p.longitudinal.a_max = 11.5  #maximum absolute acceleration [m/s^2]
 
     #masses
     p.m = unitConversion.lb_sec2_ft_IN_kg(74.91452)  #vehicle mass [kg]  MASS

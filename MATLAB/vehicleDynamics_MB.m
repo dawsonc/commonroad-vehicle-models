@@ -8,7 +8,7 @@ function f = vehicleDynamics_MB(x,u,p)
 % Inputs:
 %    x - vehicle state vector
 %    u - vehicle input vector
-%    p - vehicle parameter vector
+%    p - vehicle parameter structure
 %
 % Outputs:
 %    f - right-hand side of differential equations
@@ -23,7 +23,7 @@ function f = vehicleDynamics_MB(x,u,p)
 
 % Author:       Matthias Althoff
 % Written:      05-January-2017
-% Last update:  ---
+% Last update:  15-December-2017
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -70,9 +70,19 @@ g = 9.81; %[m/s^2]
 %u1 = v_delta steering angle velocity of front wheels
 %u2 = acceleration
 
+%consider steering constraints
+u(1) = steeringConstraints(x(3),u(1),p.steering);
+
+%consider acceleration constraints
+u(2) = accelerationConstraints(x(4),u(2),p.longitudinal);
 
 %compute slip angle at cg
-beta = atan(x(11)/x(4));
+%switch to kinematic model for small velocities
+if abs(x(4)) < 0.1
+    beta = 0;
+else
+    beta = atan(x(11)/x(4));
+end
 vel = sqrt(x(4)^2 + x(11)^2);
 
 %vertical tire forces
@@ -88,16 +98,32 @@ u_w_lr = x(4) + 0.5*p.T_r*x(6);
 u_w_rr = x(4) - 0.5*p.T_r*x(6);
 
 %compute longitudinal slip
-s_lf = 1 - p.R_w*x(24)/u_w_lf;
-s_rf = 1 - p.R_w*x(25)/u_w_rf;
-s_lr = 1 - p.R_w*x(26)/u_w_lr;
-s_rr = 1 - p.R_w*x(27)/u_w_rr;
+%switch to kinematic model for small velocities
+if abs(x(4)) < 0.1
+    s_lf = 0;
+    s_rf = 0;
+    s_lr = 0;
+    s_rr = 0;    
+else
+    s_lf = 1 - p.R_w*x(24)/u_w_lf;
+    s_rf = 1 - p.R_w*x(25)/u_w_rf;
+    s_lr = 1 - p.R_w*x(26)/u_w_lr;
+    s_rr = 1 - p.R_w*x(27)/u_w_rr;
+end
 
 %lateral slip angles
-alpha_LF = atan((x(11) + p.a*x(6) - x(15)*(p.R_w - x(17)))/(x(4) + 0.5*p.T_f*x(6))) - x(3);
-alpha_RF = atan((x(11) + p.a*x(6) - x(15)*(p.R_w - x(17)))/(x(4) - 0.5*p.T_f*x(6))) - x(3);
-alpha_LR = atan((x(11) - p.b*x(6) - x(20)*(p.R_w - x(22)))/(x(4) + 0.5*p.T_r*x(6)));
-alpha_RR = atan((x(11) - p.b*x(6) - x(20)*(p.R_w - x(22)))/(x(4) - 0.5*p.T_r*x(6)));
+%switch to kinematic model for small velocities
+if abs(x(4)) < 0.1
+    alpha_LF = 0;
+    alpha_RF = 0;
+    alpha_LR = 0;
+    alpha_RR = 0;
+else
+    alpha_LF = atan((x(11) + p.a*x(6) - x(15)*(p.R_w - x(17)))/(x(4) + 0.5*p.T_f*x(6))) - x(3);
+    alpha_RF = atan((x(11) + p.a*x(6) - x(15)*(p.R_w - x(17)))/(x(4) - 0.5*p.T_f*x(6))) - x(3);
+    alpha_LR = atan((x(11) - p.b*x(6) - x(20)*(p.R_w - x(22)))/(x(4) + 0.5*p.T_r*x(6)));
+    alpha_RR = atan((x(11) - p.b*x(6) - x(20)*(p.R_w - x(22)))/(x(4) - 0.5*p.T_r*x(6)));
+end
 
 %auxiliary suspension movement
 z_SLF = (p.h_s - p.R_w + x(17) - x(12))/cos(x(7)) - p.h_s + p.R_w + p.a*x(9) + 0.5*(x(7) - x(14))*p.T_f;
@@ -219,12 +245,22 @@ sumY_ur = (F_y_LR + F_y_RR)...
       
       
 %dynamics common with single-track model
-f(1,1) = cos(beta + x(5))*vel;
-f(2,1) = sin(beta + x(5))*vel;
-f(3,1) = u(1);
-f(4,1) = 1/p.m*sumX + x(6)*x(11);
-f(5,1) = x(6);
-f(6,1) = 1/(p.I_z - (p.I_xz_s)^2/p.I_Phi_s)*(sumN + p.I_xz_s/p.I_Phi_s*sumL);
+%switch to kinematic model for small velocities
+if abs(x(4)) < 0.1
+    %wheelbase
+    lwb = p.a + p.b; 
+    
+    %system dynamics
+    f(1:5,1) = vehicleDynamics_KS(x(1:5),u,p);
+    f(6,1) = u(2)*lwb*tan(x(3)) + x(4)/(lwb*cos(x(3))^2)*u(1);
+else
+    f(1,1) = cos(beta + x(5))*vel;
+    f(2,1) = sin(beta + x(5))*vel;
+    f(3,1) = u(1);
+    f(4,1) = 1/p.m*sumX + x(6)*x(11);
+    f(5,1) = x(6);
+    f(6,1) = 1/(p.I_z - (p.I_xz_s)^2/p.I_Phi_s)*(sumN + p.I_xz_s/p.I_Phi_s*sumL);
+end
 
 
 % remaining sprung mass dynamics

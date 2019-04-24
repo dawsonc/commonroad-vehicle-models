@@ -67,23 +67,15 @@ def init_MB(initState, p):
     #obtain initial states from vector
     sx0 = initState[0] 
     sy0 = initState[1] 
-    vel0 = initState[2] 
-    Psi0 = initState[3] 
-    dotPsi0 = initState[4] 
-    beta0 = initState[5] 
-
+    delta0 = initState[2]
+    vel0 = initState[3] 
+    Psi0 = initState[4] 
+    dotPsi0 = initState[5] 
+    beta0 = initState[6] 
 
     #create equivalent bicycle parameters
     g = 9.81  #[m/s^2]
-    mu = p.tire.p_dy1 
-    C_Sf = -p.tire.p_ky1/p.tire.p_dy1  
-    C_Sr = -p.tire.p_ky1/p.tire.p_dy1  
-    lf = p.a 
-    lr = p.b 
-
-    #initial steering angle from steady state of slip angle
-    delta0 = vel0*(lf + lr)/(C_Sf*g*lr*mu)*dotPsi0 + 1/(C_Sf*lr)*((C_Sr*lf + C_Sf*lr)*beta0 - (C_Sr - C_Sf)*lr*lf*dotPsi0/vel0) 
-
+  
     #auxiliary initial states
     F0_z_f = p.m_s*g*p.b/((p.a + p.b)) + p.m_uf*g 
     F0_z_r = p.m_s*g*p.a/((p.a + p.b)) + p.m_ur*g 

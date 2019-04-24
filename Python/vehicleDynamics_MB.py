@@ -1,7 +1,11 @@
+from steeringConstraints import steeringConstraints
+from accelerationConstraints import accelerationConstraints
+from vehicleDynamics_KS import vehicleDynamics_KS
+
 import tireModel
 import math
 
-def vehicleDynamics_MB(x,u,p):
+def vehicleDynamics_MB(x,uInit,p):
     # vehicleDynamics_MB - multi-body vehicle dynamics based on the DOT 
     # (department of transportation) vehicle dynamics
     #
@@ -22,7 +26,7 @@ def vehicleDynamics_MB(x,u,p):
 
     # Author:       Matthias Althoff
     # Written:      05-January-2017
-    # Last update:  ---
+    # Last update:17-December-2017
     # Last revision:---
 
     #------------- BEGIN CODE --------------
@@ -69,9 +73,18 @@ def vehicleDynamics_MB(x,u,p):
     #u1 = steering angle velocity of front wheels
     #u2 = acceleration
 
+    #consider steering constraints
+    u = []
+    u.append(steeringConstraints(x[2],uInit[0],p.steering)) # different name uInit/u due to side effects of u
+    #consider acceleration constraints
+    u.append(accelerationConstraints(x[3],uInit[1],p.longitudinal)) # different name uInit/u due to side effects of u
 
     #compute slip angle at cg
-    beta = math.atan(x[10]/x[3]) 
+    #switch to kinematic model for small velocities
+    if abs(x[3]) < 0.1:
+        beta = 0
+    else:
+        beta = math.atan(x[10]/x[3]) 
     vel = math.sqrt(x[3]**2 + x[10]**2) 
 
     #vertical tire forces
@@ -87,16 +100,30 @@ def vehicleDynamics_MB(x,u,p):
     u_w_rr = x[3] - 0.5*p.T_r*x[5] 
 
     #compute longitudinal slip
-    s_lf = 1 - p.R_w*x[23]/u_w_lf 
-    s_rf = 1 - p.R_w*x[24]/u_w_rf 
-    s_lr = 1 - p.R_w*x[25]/u_w_lr 
-    s_rr = 1 - p.R_w*x[26]/u_w_rr 
+    #switch to kinematic model for small velocities
+    if abs(x[3]) < 0.1:
+        s_lf = 0
+        s_rf = 0
+        s_lr = 0
+        s_rr = 0
+    else:
+        s_lf = 1 - p.R_w*x[23]/u_w_lf 
+        s_rf = 1 - p.R_w*x[24]/u_w_rf 
+        s_lr = 1 - p.R_w*x[25]/u_w_lr 
+        s_rr = 1 - p.R_w*x[26]/u_w_rr 
 
     #lateral slip angles
-    alpha_LF = math.atan((x[10] + p.a*x[5] - x[14]*(p.R_w - x[16]))/(x[3] + 0.5*p.T_f*x[5])) - x[2] 
-    alpha_RF = math.atan((x[10] + p.a*x[5] - x[14]*(p.R_w - x[16]))/(x[3] - 0.5*p.T_f*x[5])) - x[2] 
-    alpha_LR = math.atan((x[10] - p.b*x[5] - x[19]*(p.R_w - x[21]))/(x[3] + 0.5*p.T_r*x[5])) 
-    alpha_RR = math.atan((x[10] - p.b*x[5] - x[19]*(p.R_w - x[21]))/(x[3] - 0.5*p.T_r*x[5])) 
+    #switch to kinematic model for small velocities
+    if abs(x[3]) < 0.1:
+        alpha_LF = 0
+        alpha_RF = 0
+        alpha_LR = 0
+        alpha_RR = 0
+    else:
+        alpha_LF = math.atan((x[10] + p.a*x[5] - x[14]*(p.R_w - x[16]))/(x[3] + 0.5*p.T_f*x[5])) - x[2] 
+        alpha_RF = math.atan((x[10] + p.a*x[5] - x[14]*(p.R_w - x[16]))/(x[3] - 0.5*p.T_f*x[5])) - x[2] 
+        alpha_LR = math.atan((x[10] - p.b*x[5] - x[19]*(p.R_w - x[21]))/(x[3] + 0.5*p.T_r*x[5])) 
+        alpha_RR = math.atan((x[10] - p.b*x[5] - x[19]*(p.R_w - x[21]))/(x[3] - 0.5*p.T_r*x[5])) 
 
     #auxiliary suspension movement
     z_SLF = (p.h_s - p.R_w + x[16] - x[11])/math.cos(x[6]) - p.h_s + p.R_w + p.a*x[8] + 0.5*(x[6] - x[13])*p.T_f 
@@ -225,12 +252,24 @@ def vehicleDynamics_MB(x,u,p):
           
     #dynamics common with single-track model
     f = [] # init 'right hand side'
-    f.append(math.cos(beta + x[4])*vel)
-    f.append(math.sin(beta + x[4])*vel)
-    f.append(u[0])
-    f.append(1/p.m*sumX + x[5]*x[10])
-    f.append(x[5])
-    f.append(1/(p.I_z - (p.I_xz_s)**2/p.I_Phi_s)*(sumN + p.I_xz_s/p.I_Phi_s*sumL))
+    #switch to kinematic model for small velocities
+    if abs(x[3]) < 0.1:
+        #wheelbase
+        lwb = p.a + p.b
+        
+        #system dynamics
+        x_ks = [x[0],  x[1],  x[2],  x[3],  x[4]]
+        f_ks = vehicleDynamics_KS(x_ks,u,p)
+        f.extend(f_ks)
+        f.append(u[1]*lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0])
+
+    else:
+        f.append(math.cos(beta + x[4])*vel)
+        f.append(math.sin(beta + x[4])*vel)
+        f.append(u[0])
+        f.append(1/p.m*sumX + x[5]*x[10])
+        f.append(x[5])
+        f.append(1/(p.I_z - (p.I_xz_s)**2/p.I_Phi_s)*(sumN + p.I_xz_s/p.I_Phi_s*sumL))
 
 
     # remaining sprung mass dynamics
@@ -279,7 +318,6 @@ def vehicleDynamics_MB(x,u,p):
     #compliant joint equations
     f.append(dot_delta_y_f)
     f.append(dot_delta_y_r)
-
 
     return f
 
