@@ -4,6 +4,11 @@ This repository contains all vehicle models of the [CommonRoad benchmarks](https
 
 We provide implementation examples in MATLAB and Python, routines to convert initial states and parameters, simulation examples to demonstrate the advantages of more complicated models, and a detailed documentation.
 
+## Installation (Python)
+
+To use vehicle models and parameters, add the folder `Python` to your PYTHONPATH. If you are using PyCharm, this can be set through File->Settings->Project Interpreter->Show all->Edit
+
+
 ## Contribute
 
 If you want to contribute new vehicle models, you can create a merge request or contact us per [e-mail](mailto:commonroad-i06@in.tum.de).
