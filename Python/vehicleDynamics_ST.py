@@ -28,7 +28,8 @@ def vehicleDynamics_ST(x,uInit,p):
 
     # Author:       Matthias Althoff
     # Written:      12-January-2017
-    # Last update:16-December-2017
+    # Last update:  16-December-2017
+    #               03-September-2019
     # Last revision:---
 
     #------------- BEGIN CODE --------------
@@ -73,7 +74,7 @@ def vehicleDynamics_ST(x,uInit,p):
         x_ks = [x[0],  x[1],  x[2],  x[3],  x[4]]
         f_ks = vehicleDynamics_KS(x_ks,u,p)
         f = [f_ks[0],  f_ks[1],  f_ks[2],  f_ks[3],  f_ks[4], 
-        u[1]*lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0], 
+        u[1]/lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0], 
         0]
 
     else:

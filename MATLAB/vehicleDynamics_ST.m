@@ -23,6 +23,7 @@ function f = vehicleDynamics_ST(x,u,p)
 % Author:       Matthias Althoff
 % Written:      12-January-2017
 % Last update:  15-December-2017
+%		03-September-2019
 % Last revision:---
 
 %------------- BEGIN CODE --------------
@@ -52,7 +53,7 @@ if abs(x(4)) < 0.1
     
     %system dynamics
     f(1:5,1) = vehicleDynamics_KS(x(1:5),u,p);
-    f(6,1) = u(2)*lwb*tan(x(3)) + x(4)/(lwb*cos(x(3))^2)*u(1);
+    f(6,1) = u(2)/lwb*tan(x(3)) + x(4)/(lwb*cos(x(3))^2)*u(1);
     f(7,1) = 0;
 else
 
