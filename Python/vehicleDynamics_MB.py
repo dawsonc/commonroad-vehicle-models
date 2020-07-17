@@ -310,7 +310,7 @@ def vehicleDynamics_MB(x,uInit,p):
     f.append(1/p.I_y_w*(-p.R_w*F_x_RR + 0.5*(1-p.T_sb)*T_B + 0.5*(1-p.T_se)*T_E))
 
     #negative wheel spin forbidden
-    for iState in range(23, 26):
+    for iState in range(23, 27):
         if x[iState]<0:
            x[iState] = 0 
            f[iState] = 0  
