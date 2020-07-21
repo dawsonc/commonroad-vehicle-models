@@ -1,8 +1,12 @@
-from steeringConstraints import steeringConstraints
-from accelerationConstraints import accelerationConstraints
 import math
 
-def vehicleDynamics_KS(x,uInit,p):
+# from vehiclemodels.steeringConstraints import steering_constraints
+# from vehiclemodels.utils.accelerationConstraints import acceleration_constraints
+from vehiclemodels.utils.acceleration_constraints import acceleration_constraints
+from vehiclemodels.utils.steering_constraints import steering_constraints
+
+
+def vehicle_dynamics_ks(x, u_init, p):
     # vehicleDynamics_KS - kinematic single-track vehicle dynamics 
     #
     # Syntax:  
@@ -46,9 +50,9 @@ def vehicleDynamics_KS(x,uInit,p):
     
     #consider steering constraints
     u = [];
-    u.append(steeringConstraints(x[2],uInit[0],p.steering)) # different name uInit/u due to side effects of u
+    u.append(steering_constraints(x[2], u_init[0], p.steering)) # different name u_init/u due to side effects of u
     #consider acceleration constraints
-    u.append(accelerationConstraints(x[3],uInit[1],p.longitudinal)) # different name uInit/u due to side effects of u
+    u.append(acceleration_constraints(x[3], u_init[1], p.longitudinal)) # different name u_init/u due to side effects of u
 
     #system dynamics
     f = [x[3]*math.cos(x[4]), 

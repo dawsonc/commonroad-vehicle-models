@@ -1,11 +1,12 @@
-from steeringConstraints import steeringConstraints
-from accelerationConstraints import accelerationConstraints
-from vehicleDynamics_KS import vehicleDynamics_KS
-
-import tireModel
 import math
 
-def vehicleDynamics_MB(x,uInit,p):
+from vehiclemodels.utils.steering_constraints import steering_constraints
+from vehiclemodels.utils.acceleration_constraints import acceleration_constraints
+from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+import vehiclemodels.utils.tire_model as tireModel
+
+
+def vehicle_dynamics_mb(x, uInit, p):
     # vehicleDynamics_MB - multi-body vehicle dynamics based on the DOT 
     # (department of transportation) vehicle dynamics
     #
@@ -75,17 +76,19 @@ def vehicleDynamics_MB(x,uInit,p):
 
     #consider steering constraints
     u = []
-    u.append(steeringConstraints(x[2],uInit[0],p.steering)) # different name uInit/u due to side effects of u
+    u.append(steering_constraints(x[2], uInit[0], p.steering)) # different name u_init/u due to side effects of u
     #consider acceleration constraints
-    u.append(accelerationConstraints(x[3],uInit[1],p.longitudinal)) # different name uInit/u due to side effects of u
+    u.append(acceleration_constraints(x[3], uInit[1], p.longitudinal)) # different name u_init/u due to side effects of u
 
     #compute slip angle at cg
     #switch to kinematic model for small velocities
     if abs(x[3]) < 0.1:
-        beta = 0
+        beta = 0.
     else:
         beta = math.atan(x[10]/x[3]) 
     vel = math.sqrt(x[3]**2 + x[10]**2) 
+
+
 
     #vertical tire forces
     F_z_LF = (x[16] + p.R_w*(math.cos(x[13]) - 1) - 0.5*p.T_f*math.sin(x[13]))*p.K_zt 
@@ -99,13 +102,25 @@ def vehicleDynamics_MB(x,uInit,p):
     u_w_lr = x[3] + 0.5*p.T_r*x[5] 
     u_w_rr = x[3] - 0.5*p.T_r*x[5] 
 
+    #negative wheel spin forbidden
+    if u_w_lf < 0.0:
+       u_w_lf *= 0
+
+    if u_w_rf < 0.0:
+       u_w_rf *= 0
+
+    if u_w_lr < 0.0:
+       u_w_lr *= 0
+
+    if u_w_rr < 0.0:
+       u_w_rr *= 0
     #compute longitudinal slip
     #switch to kinematic model for small velocities
     if abs(x[3]) < 0.1:
-        s_lf = 0
-        s_rf = 0
-        s_lr = 0
-        s_rr = 0
+        s_lf = 0.
+        s_rf = 0.
+        s_lr = 0.
+        s_rr = 0.
     else:
         s_lf = 1 - p.R_w*x[23]/u_w_lf 
         s_rf = 1 - p.R_w*x[24]/u_w_rf 
@@ -115,10 +130,10 @@ def vehicleDynamics_MB(x,uInit,p):
     #lateral slip angles
     #switch to kinematic model for small velocities
     if abs(x[3]) < 0.1:
-        alpha_LF = 0
-        alpha_RF = 0
-        alpha_LR = 0
-        alpha_RR = 0
+        alpha_LF = 0.
+        alpha_RF = 0.
+        alpha_LR = 0.
+        alpha_RR = 0.
     else:
         alpha_LF = math.atan((x[10] + p.a*x[5] - x[14]*(p.R_w - x[16]))/(x[3] + 0.5*p.T_f*x[5])) - x[2] 
         alpha_RF = math.atan((x[10] + p.a*x[5] - x[14]*(p.R_w - x[16]))/(x[3] - 0.5*p.T_f*x[5])) - x[2] 
@@ -143,30 +158,30 @@ def vehicleDynamics_MB(x,uInit,p):
     gamma_RR = x[6] - p.D_r*z_SRR - p.E_r*(z_SRR)**2 
 
     #compute longitudinal tire forces using the magic formula for pure slip
-    F0_x_LF = tireModel.mFormulaLongitudinal(s_lf, gamma_LF, F_z_LF, p.tire) 
-    F0_x_RF = tireModel.mFormulaLongitudinal(s_rf, gamma_RF, F_z_RF, p.tire) 
-    F0_x_LR = tireModel.mFormulaLongitudinal(s_lr, gamma_LR, F_z_LR, p.tire) 
-    F0_x_RR = tireModel.mFormulaLongitudinal(s_rr, gamma_RR, F_z_RR, p.tire) 
+    F0_x_LF = tireModel.formula_longitudinal(s_lf, gamma_LF, F_z_LF, p.tire)
+    F0_x_RF = tireModel.formula_longitudinal(s_rf, gamma_RF, F_z_RF, p.tire)
+    F0_x_LR = tireModel.formula_longitudinal(s_lr, gamma_LR, F_z_LR, p.tire)
+    F0_x_RR = tireModel.formula_longitudinal(s_rr, gamma_RR, F_z_RR, p.tire)
 
     #compute lateral tire forces using the magic formula for pure slip
-    res = tireModel.mFormulaLateral(alpha_LF, gamma_LF, F_z_LF, p.tire) 
+    res = tireModel.formula_lateral(alpha_LF, gamma_LF, F_z_LF, p.tire)
     F0_y_LF = res[0]
     mu_y_LF = res[1]
-    res = tireModel.mFormulaLateral(alpha_RF, gamma_RF, F_z_RF, p.tire) 
+    res = tireModel.formula_lateral(alpha_RF, gamma_RF, F_z_RF, p.tire)
     F0_y_RF = res[0]
     mu_y_RF = res[1]
-    res = tireModel.mFormulaLateral(alpha_LR, gamma_LR, F_z_LR, p.tire) 
+    res = tireModel.formula_lateral(alpha_LR, gamma_LR, F_z_LR, p.tire)
     F0_y_LR = res[0]
     mu_y_LR = res[1]
-    res = tireModel.mFormulaLateral(alpha_RR, gamma_RR, F_z_RR, p.tire) 
+    res = tireModel.formula_lateral(alpha_RR, gamma_RR, F_z_RR, p.tire)
     F0_y_RR = res[0]
     mu_y_RR = res[1]
 
     #compute longitudinal tire forces using the magic formula for combined slip
-    F_x_LF = tireModel.mFormulaLongitudinalComb(s_lf, alpha_LF, F0_x_LF, p.tire) 
-    F_x_RF = tireModel.mFormulaLongitudinalComb(s_rf, alpha_RF, F0_x_RF, p.tire) 
-    F_x_LR = tireModel.mFormulaLongitudinalComb(s_lr, alpha_LR, F0_x_LR, p.tire) 
-    F_x_RR = tireModel.mFormulaLongitudinalComb(s_rr, alpha_RR, F0_x_RR, p.tire) 
+    F_x_LF = tireModel.formula_longitudinal_comb(s_lf, alpha_LF, F0_x_LF, p.tire)
+    F_x_RF = tireModel.formula_longitudinal_comb(s_rf, alpha_RF, F0_x_RF, p.tire)
+    F_x_LR = tireModel.formula_longitudinal_comb(s_lr, alpha_LR, F0_x_LR, p.tire)
+    F_x_RR = tireModel.formula_longitudinal_comb(s_rr, alpha_RR, F0_x_RR, p.tire)
 
     #compute lateral tire forces using the magic formula for combined slip
     F_y_LF = tireModel.mFormulaLateralComb(s_lf, alpha_LF, gamma_LF, mu_y_LF, F_z_LF, F0_y_LF, p.tire) 
@@ -259,7 +274,7 @@ def vehicleDynamics_MB(x,uInit,p):
         
         #system dynamics
         x_ks = [x[0],  x[1],  x[2],  x[3],  x[4]]
-        f_ks = vehicleDynamics_KS(x_ks,u,p)
+        f_ks = vehicle_dynamics_ks(x_ks, u, p)
         f.extend(f_ks)
         f.append(u[1]*lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0])
 
@@ -297,11 +312,13 @@ def vehicleDynamics_MB(x,uInit,p):
 
     #convert acceleration input to brake and engine torque
     if u[1]>0:
-        T_B = 0 
+        T_B = 0.0
         T_E = p.m*p.R_w*u[1] 
     else:
         T_B = p.m*p.R_w*u[1] 
-        T_E = 0 
+        T_E = 0.
+
+
 
     #wheel dynamics (p.T  new parameter for torque splitting)
     f.append(1/p.I_y_w*(-p.R_w*F_x_LF + 0.5*p.T_sb*T_B + 0.5*p.T_se*T_E))
@@ -311,9 +328,9 @@ def vehicleDynamics_MB(x,uInit,p):
 
     #negative wheel spin forbidden
     for iState in range(23, 27):
-        if x[iState]<0:
-           x[iState] = 0 
-           f[iState] = 0  
+        if x[iState] < 0.0:
+           x[iState] = 0.0
+           f[iState] = 0.0
 
     #compliant joint equations
     f.append(dot_delta_y_f)

@@ -1,32 +1,28 @@
-import sys
-# Add the ptdraft folder path to the sys.path list
-sys.path.append('../')
-
 #from parameters_vehicle1 import parameters_vehicle1
-from parameters_vehicle2 import parameters_vehicle2
-from init_KS import init_KS
-from init_ST import init_ST
-from init_MB import init_MB
-from vehicleDynamics_KS import vehicleDynamics_KS
-from vehicleDynamics_ST import vehicleDynamics_ST
-from vehicleDynamics_MB import vehicleDynamics_MB
+from vehiclemodels.parameters_vehicle2 import parameters_vehicle2
+from vehiclemodels.init_ks import init_ks
+from vehiclemodels.init_st import init_st
+from vehiclemodels.init_mb import init_mb
+from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+from vehiclemodels.vehicle_dynamics_st import vehicle_dynamics_st
+from vehiclemodels.vehicle_dynamics_mb import vehicle_dynamics_mb
 from scipy.integrate import odeint
 import numpy
 #import matplotlib.pyplot as plt
 
 
 def func_KS(x, t, u, p):
-    f = vehicleDynamics_KS(x, u, p)
+    f = vehicle_dynamics_ks(x, u, p)
     return f
     
 
 def func_ST(x, t, u, p):
-    f = vehicleDynamics_ST(x, u, p)
+    f = vehicle_dynamics_st(x, u, p)
     return f
 
 
 def func_MB(x, t, u, p):
-    f = vehicleDynamics_MB(x, u, p)
+    f = vehicle_dynamics_mb(x, u, p)
     return f
 
 def test_zeroInitialVelocity():
@@ -78,9 +74,9 @@ def test_zeroInitialVelocity():
   beta0 = 0
   sy0 = 0
   initialState = [0,sy0,delta0,vel0,Psi0,dotPsi0,beta0]  #initial state for simulation
-  x0_KS = init_KS(initialState)  #initial state for kinematic single-track model
-  x0_ST = init_ST(initialState)  #initial state for single-track model
-  x0_MB = init_MB(initialState, p)  #initial state for multi-body model
+  x0_KS = init_ks(initialState)  #initial state for kinematic single-track model
+  x0_ST = init_st(initialState)  #initial state for single-track model
+  x0_MB = init_mb(initialState, p)  #initial state for multi-body model
   #--------------------------------------------------------------------------
 
   # create time vector

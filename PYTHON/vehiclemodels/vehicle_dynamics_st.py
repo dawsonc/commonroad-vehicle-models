@@ -1,10 +1,11 @@
-from steeringConstraints import steeringConstraints
-from accelerationConstraints import accelerationConstraints
-from vehicleDynamics_KS import vehicleDynamics_KS
-
 import math
 
-def vehicleDynamics_ST(x,uInit,p):
+from vehiclemodels.utils.steering_constraints import steering_constraints
+from vehiclemodels.utils.acceleration_constraints import acceleration_constraints
+from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+
+
+def vehicle_dynamics_st(x, uInit, p):
     # vehicleDynamics_ST - single-track vehicle dynamics 
     #
     # Syntax:  
@@ -61,9 +62,9 @@ def vehicleDynamics_ST(x,uInit,p):
 
     #consider steering constraints
     u = []
-    u.append(steeringConstraints(x[2],uInit[0],p.steering)) # different name uInit/u due to side effects of u
+    u.append(steering_constraints(x[2], uInit[0], p.steering)) # different name u_init/u due to side effects of u
     #consider acceleration constraints
-    u.append(accelerationConstraints(x[3],uInit[1],p.longitudinal)) # different name uInit/u due to side effects of u
+    u.append(acceleration_constraints(x[3], uInit[1], p.longitudinal)) # different name u_init/u due to side effects of u
 
     # switch to kinematic model for small velocities
     if abs(x[3]) < 0.1:
@@ -72,7 +73,7 @@ def vehicleDynamics_ST(x,uInit,p):
         
         #system dynamics
         x_ks = [x[0],  x[1],  x[2],  x[3],  x[4]]
-        f_ks = vehicleDynamics_KS(x_ks,u,p)
+        f_ks = vehicle_dynamics_ks(x_ks, u, p)
         f = [f_ks[0],  f_ks[1],  f_ks[2],  f_ks[3],  f_ks[4], 
         u[1]/lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0], 
         0]

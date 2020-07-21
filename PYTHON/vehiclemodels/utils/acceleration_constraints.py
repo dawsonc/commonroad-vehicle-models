@@ -1,4 +1,4 @@
-def accelerationConstraints(velocity,acceleration,p):
+def acceleration_constraints(velocity, acceleration, p):
     # accelerationConstraints - adjusts the acceleration based on acceleration
     # constraints
     #
@@ -26,22 +26,22 @@ def accelerationConstraints(velocity,acceleration,p):
     # Last update:  ---
     # Last revision:---
 
-    #------------- BEGIN CODE --------------
+    # ------------- BEGIN CODE --------------
 
-    #positive acceleration limit
-    if velocity>p.v_switch:
-        posLimit = p.a_max*p.v_switch/velocity
+    # positive acceleration limit
+    if velocity > p.v_switch:
+        posLimit = p.a_max * p.v_switch / velocity
     else:
         posLimit = p.a_max
 
-    #acceleration limit reached?
-    if (velocity<=p.v_min and acceleration<=0) or (velocity>=p.v_max and acceleration>=0):
+    # acceleration limit reached?
+    if (velocity <= p.v_min and acceleration <= 0) or (velocity >= p.v_max and acceleration >= 0):
         acceleration = 0
-    elif acceleration<=-p.a_max:
+    elif acceleration <= -p.a_max:
         acceleration = -p.a_max
-    elif acceleration>=posLimit:
-        acceleration = posLimit 
-    
+    elif acceleration >= posLimit:
+        acceleration = posLimit
+
     return acceleration
 
-    #------------- END OF CODE --------------
+    # ------------- END OF CODE --------------

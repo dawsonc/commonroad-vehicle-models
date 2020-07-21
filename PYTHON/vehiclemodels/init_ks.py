@@ -1,11 +1,11 @@
-def init_KS(initState):
+def init_ks(init_state):
     # init_KS - generates the initial state vector for the kinematic single-track model
 
     # Syntax:  
-    #     x0 = init_KS(initState, p)
+    #     x0 = init_KS(init_state, p)
     #
     # Inputs:
-    #     initState - core initial states
+    #     init_state - core initial states
     #
     # Outputs:
     #     x0 - initial state vector
@@ -33,11 +33,11 @@ def init_KS(initState):
     #u2 = ongitudinal acceleration
 
     #obtain initial states from vector
-    sx0 = initState[0] 
-    sy0 = initState[1] 
-    delta0 = initState[2]
-    vel0 = initState[3] 
-    Psi0 = initState[4] 
+    sx0 = init_state[0]
+    sy0 = init_state[1]
+    delta0 = init_state[2]
+    vel0 = init_state[3]
+    Psi0 = init_state[4]
 
     #sprung mass states
     x0 = [] # init initial state vector

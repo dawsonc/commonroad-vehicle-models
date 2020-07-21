@@ -1,12 +1,10 @@
-import sys
-# Add the ptdraft folder path to the sys.path list
-sys.path.append('../')
-
-from parameters_vehicle2 import parameters_vehicle2
-from vehicleDynamics_KS import vehicleDynamics_KS
-from vehicleDynamics_ST import vehicleDynamics_ST
-from vehicleDynamics_MB import vehicleDynamics_MB
 import numpy
+
+from vehiclemodels.parameters_vehicle2 import parameters_vehicle2
+from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+from vehiclemodels.vehicle_dynamics_mb import vehicle_dynamics_mb
+from vehiclemodels.vehicle_dynamics_st import vehicle_dynamics_st
+
 
 def test_derivatives():
     # test_derivatives - unit_test_function for checking whether the derivative
@@ -54,9 +52,9 @@ def test_derivatives():
     u = [v_delta,  acc]
 
     # insert into vehicle dynamics to obtain derivatives
-    f_ks = vehicleDynamics_KS(x_ks,u,p)
-    f_st = vehicleDynamics_ST(x_st,u,p)
-    f_mb = vehicleDynamics_MB(x_mb,u,p)
+    f_ks = vehicle_dynamics_ks(x_ks, u, p)
+    f_st = vehicle_dynamics_st(x_st, u, p)
+    f_mb = vehicle_dynamics_mb(x_mb, u, p)
 
     # ground truth
     f_ks_gt = [16.3475935934250209, 0.4819314886013121, 0.1500000000000000, 5.1464424102339752, 0.2401426578627629]
