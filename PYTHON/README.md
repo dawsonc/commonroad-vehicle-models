@@ -2,13 +2,13 @@
 
 This package contains all vehicle models of the [CommonRoad benchmarks](https://commonroad.in.tum.de/).
 
-We provide implementations of the vehicle dynamics and routines to convert initial states and parameters.
+We provide implementations of the vehicle dynamics, routines to convert initial states, and vehicle parameters.
 
 ## Documentation
 
-For a detailed explanation of the vehicle models, please have a look at the [documentation](https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/blob/master/vehicleModels_commonRoad.pdf)
+For a detailed explanation of the vehicle models, please have a look at the [documentation](https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/blob/master/vehicleModels_commonRoad.pdf).
 
-## Installation (Python)
+## Installation
 
 To use vehicle models and parameters, run
 ```
