@@ -17,7 +17,7 @@ pip install commonroad-vehicle-models
 
 ## Code examples
 
-For an extended simulation example demonstrating the advantages of more complicated models, we refer to our [gitlab repository](https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/-/tree/master/Python/scripts). A simple simulation example for using the single-track model in combination with an odeint solver would be
+For an extended simulation example demonstrating the advantages of more complicated models, we refer to our [gitlab repository](https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/-/tree/master/PYTHON/scripts). A simple simulation example for using the single-track model in combination with an odeint solver would be
 
 ```python3
 from scipy.integrate import odeint
