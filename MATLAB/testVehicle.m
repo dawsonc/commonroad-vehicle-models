@@ -58,7 +58,7 @@ plot(t_roll,x_roll(:,4));
 plot(x_roll(:,1),x_roll(:,2));
 
 %set input: braking car (wheel spin and velocity should decrease; similar wheel spin)
-v_delta = 0.15;
+v_delta = 0.0;
 acc = -0.7*g;
 u = [v_delta acc];
 %simulate car
@@ -70,6 +70,7 @@ figure % velocity
 plot(t_brake,x_brake(:,4));
 figure % wheel spin
 hold on
+title('wheel spin braking')
 plot(t_brake,x_brake(:,24));
 plot(t_brake,x_brake(:,25));
 plot(t_brake,x_brake(:,26));
@@ -78,7 +79,7 @@ figure % pitch
 plot(t_brake,x_brake(:,9));
 
 %set input: accelerating car (wheel spin and velocity should increase; more wheel spin at rear)
-v_delta = 0.15;
+v_delta = 0.0;
 acc = 0.63*g;
 u = [v_delta acc];
 
@@ -93,9 +94,11 @@ u = [v_delta acc];
 
 figure %position
 hold on
+title('positions acceleration')
 plot(x_acc(:,1),x_acc(:,2))
 plot(x_acc_st(:,1),x_acc_st(:,2))
 plot(x_acc_ks(:,1),x_acc_ks(:,2))
+legend('MB','ST','KS')
 figure % velocity
 plot(t_acc,x_acc(:,4));
 figure % wheel spin
@@ -104,11 +107,14 @@ plot(t_acc,x_acc(:,24));
 plot(t_acc,x_acc(:,25));
 plot(t_acc,x_acc(:,26));
 plot(t_acc,x_acc(:,27));
+title('wheel spins acceleration')
+legend('left front', 'right front', 'left rear', 'right rear')
 figure % pitch
 plot(t_acc,x_acc(:,9));
 figure %orientation
 hold on
 plot(t_acc,x_acc(:,5))
+title('orientation')
 
 
 %steering to left
@@ -126,27 +132,37 @@ u = [v_delta 0];
 
 figure %position
 hold on
+title('positions turning')
 plot(x_left(:,1),x_left(:,2))
 plot(x_left_st(:,1),x_left_st(:,2))
 plot(x_left_ks(:,1),x_left_ks(:,2))
+legend('MB','ST','KS')
 figure %orientation
 hold on
+title('orientations turning')
 plot(t_left,x_left(:,5))
 plot(t_left_st,x_left_st(:,5),'r')
 plot(t_left_ks,x_left_ks(:,5),'g')
+legend('MB','ST','KS')
 figure %steering
 hold on
+title('steering turning')
 plot(t_left,x_left(:,3))
 plot(t_left_st,x_left_st(:,3),'r')
 plot(t_left_ks,x_left_ks(:,3),'g')
+legend('MB','ST','KS')
 figure %yaw rate
 hold on
+title('yaw rate turning')
 plot(t_left,x_left(:,6))
 plot(t_left_st,x_left_st(:,6),'r')
+legend('MB','ST')
 figure %slip angle
 hold on
+title('slip angle turning')
 plot(t_left,atan(x_left(:,11)./x_left(:,4)))
 plot(t_left_st,x_left_st(:,7))
+legend('MB','ST')
 % figure % wheel spin
 % hold on
 % plot(t_acc,x_acc(:,24));
@@ -158,6 +174,7 @@ plot(t_left_st,x_left_st(:,7))
 %compare position for braking/normal
 figure %position
 hold on
+title('position comparison MB including axle')
 plot(x_left(:,1),x_left(:,2))
 plot(x_brake(:,1),x_brake(:,2))
 plot(x_acc(:,1),x_acc(:,2))
@@ -179,21 +196,27 @@ end
 %compare slip angles
 figure 
 hold on
+title('slip angle comparison MB')
 plot(t_left,atan(x_left(:,11)./x_left(:,4)))
 plot(t_brake,atan(x_brake(:,11)./x_brake(:,4)))
 plot(t_acc,atan(x_acc(:,11)./x_acc(:,4)))
+legend('turning','braking', 'accelerating')
 %orientation
 figure 
 hold on
+title('orientation comparison MB')
 plot(t_left,x_left(:,5))
 plot(t_brake,x_brake(:,5))
 plot(t_acc,x_acc(:,5))
+legend('turning','braking', 'accelerating')
 %pitch
 figure 
 hold on
+title('pitch comparison MB')
 plot(t_left,x_left(:,9))
 plot(t_brake,x_brake(:,9))
 plot(t_acc,x_acc(:,9))
+legend('turning','braking', 'accelerating')
 end
 
 % add input and parameters to ode 

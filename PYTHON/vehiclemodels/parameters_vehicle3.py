@@ -1,5 +1,5 @@
 from vehiclemodels.utils import unitConversion
-from vehiclemodels.vehicleParameters import VehicleParameters
+from vehiclemodels.vehicle_parameters import VehicleParameters
 
 
 def parameters_vehicle3():
