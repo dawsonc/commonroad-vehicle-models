@@ -6,14 +6,20 @@ We provide implementation examples in MATLAB and Python, routines to convert ini
 
 ## Installation (Python)
 
-To use vehicle models and parameters, run
-```
-python setup.py install
-```
+To use vehicle models and parameters, add the folder `Python` to your PYTHONPATH. If you are using PyCharm, this can be set through File->Settings->Project Interpreter->Show all->Edit
+
 
 ## Contribute
 
-If you want to contribute new vehicle models, you can create a merge request or contact us per [e-mail](mailto:commonroad-i06@in.tum.de).
+If you want to contribute new vehicle models, you can create a merge request or contact us via our [forum](https://commonroad.in.tum.de/forum/).
+
+
+## Changelog
+Compared to version 2019b the following features were added:
+* kinematic single-track model with on-axle trailer
+* vehicle parameter set for a semi-trailer truck (vehicle ID: 4)
+* single-track drift model: nonlinear single-track model with Pacejka tire forces
+* refactoring and restructuring of MATLAB and PYTHON packages
 
 ## References
 

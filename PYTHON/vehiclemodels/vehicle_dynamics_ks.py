@@ -5,33 +5,35 @@ import math
 from vehiclemodels.utils.acceleration_constraints import acceleration_constraints
 from vehiclemodels.utils.steering_constraints import steering_constraints
 
+__author__ = "Matthias Althoff"
+__copyright__ = "TUM Cyber-Physical Systems Group"
+__version__ = "2020a"
+__maintainer__ = "Gerald Würsching"
+__email__ = "commonroad@lists.lrz.de"
+__status__ = "Released"
+
 
 def vehicle_dynamics_ks(x, u_init, p):
-    # vehicleDynamics_KS - kinematic single-track vehicle dynamics 
-    #
-    # Syntax:  
-    #    f = vehicleDynamics_KS(x,u,p)
-    #
-    # Inputs:
-    #    x - vehicle state vector
-    #    u - vehicle input vector
-    #    p - vehicle parameter vector
-    #
-    # Outputs:
-    #    f - right-hand side of differential equations
-    #
-    # Example: 
-    #
-    # Other m-files required: none
-    # Subfunctions: none
-    # MAT-files required: none
-    #
-    # See also: ---
+    """
+    vehicleDynamics_ks - kinematic single-track vehicle dynamics
+    reference point: rear axle
 
-    # Author:       Matthias Althoff
-    # Written:      12-January-2017
-    # Last update:16-December-2017
-    # Last revision:---
+    Syntax:
+        f = vehicleDynamics_ks(x,u,p)
+
+    Inputs:
+        :param x: vehicle state vector
+        :param u_init: vehicle input vector
+        :param p: vehicle parameter vector
+
+    Outputs:
+        :return f: right-hand side of differential equations
+
+    Author: Matthias Althoff
+    Written: 12-January-2017
+    Last update: 16-December-2017
+    Last revision: ---
+    """
 
     #------------- BEGIN CODE --------------
 

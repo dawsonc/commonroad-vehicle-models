@@ -3,6 +3,7 @@
 from vehiclemodels.utils.longitudinal_parameters import LongitudinalParameters
 from vehiclemodels.utils.steering_parameters import SteeringParameters
 from vehiclemodels.utils.tireParameters import TireParameters
+from vehiclemodels.utils.trailer_parameters import TrailerParameters
 
 
 class VehicleParameters:
@@ -74,3 +75,6 @@ class VehicleParameters:
 
         # tire parameters 
         self.tire = TireParameters()
+
+        # trailer parameters
+        self.trailer = TrailerParameters()

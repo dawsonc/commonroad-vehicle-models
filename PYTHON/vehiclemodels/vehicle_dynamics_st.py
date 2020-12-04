@@ -2,36 +2,38 @@ import math
 
 from vehiclemodels.utils.steering_constraints import steering_constraints
 from vehiclemodels.utils.acceleration_constraints import acceleration_constraints
-from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+from vehiclemodels.utils.vehicle_dynamics_ks_cog import vehicle_dynamics_ks_cog
+
+__author__ = "Matthias Althoff"
+__copyright__ = "TUM Cyber-Physical Systems Group"
+__version__ = "2020a"
+__maintainer__ = "Gerald Würsching"
+__email__ = "commonroad@lists.lrz.de"
+__status__ = "Released"
 
 
 def vehicle_dynamics_st(x, uInit, p):
-    # vehicleDynamics_ST - single-track vehicle dynamics 
-    #
-    # Syntax:  
-    #    f = vehicleDynamics_ST(x,u,p)
-    #
-    # Inputs:
-    #    x - vehicle state vector
-    #    u - vehicle input vector
-    #    p - vehicle parameter vector
-    #
-    # Outputs:
-    #    f - right-hand side of differential equations
-    #
-    # Example: 
-    #
-    # Other m-files required: none
-    # Subfunctions: none
-    # MAT-files required: none
-    #
-    # See also: ---
+    """
+    vehicleDynamics_st - single-track vehicle dynamics
+    reference point: center of mass
 
-    # Author:       Matthias Althoff
-    # Written:      12-January-2017
-    # Last update:  16-December-2017
-    #               03-September-2019
-    # Last revision:---
+    Syntax:
+        f = vehicleDynamics_st(x,u,p)
+
+    Inputs:
+        :param x: vehicle state vector
+        :param uInit: vehicle input vector
+        :param p: vehicle parameter vector
+
+    Outputs:
+        :return f: right-hand side of differential equations
+
+    Author: Matthias Althoff
+    Written: 12-January-2017
+    Last update: 16-December-2017
+                 03-September-2019
+    Last revision: 17-November-2020
+    """
 
     #------------- BEGIN CODE --------------
 
@@ -68,18 +70,24 @@ def vehicle_dynamics_st(x, uInit, p):
 
     # switch to kinematic model for small velocities
     if abs(x[3]) < 0.1:
-        #wheelbase
-        lwb = p.a + p.b; 
-        
-        #system dynamics
+        # Use kinematic model with reference point at center of mass
+        # wheelbase
+        lwb = p.a + p.b
+        # system dynamics
         x_ks = [x[0],  x[1],  x[2],  x[3],  x[4]]
-        f_ks = vehicle_dynamics_ks(x_ks, u, p)
-        f = [f_ks[0],  f_ks[1],  f_ks[2],  f_ks[3],  f_ks[4], 
-        u[1]/lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0], 
-        0]
+        # kinematic model
+        f_ks = vehicle_dynamics_ks_cog(x_ks, u, p)
+        f = [f_ks[0],  f_ks[1],  f_ks[2],  f_ks[3],  f_ks[4]]
+        # derivative of slip angle and yaw rate
+        d_beta = (p.b * u[0]) / (lwb*math.cos(x[2])**2 * (1 + (math.tan(x[2])**2 * p.b/lwb)**2))
+        dd_psi = 1/lwb * (u[1]*math.cos(x[6])*math.tan(x[2]) -
+                          x[3]*math.sin(x[6])*d_beta*math.tan(x[2]) +
+                          x[3]*math.cos(x[6])*u[0]/math.cos(x[2])**2)
+        f.append(dd_psi)
+        f.append(d_beta)
 
     else:
-        #system dynamics
+        # system dynamics
         f = [x[3]*math.cos(x[6] + x[4]), 
             x[3]*math.sin(x[6] + x[4]), 
             u[0], 

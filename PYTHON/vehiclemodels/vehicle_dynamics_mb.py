@@ -2,33 +2,38 @@ import math
 
 from vehiclemodels.utils.steering_constraints import steering_constraints
 from vehiclemodels.utils.acceleration_constraints import acceleration_constraints
-from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+from vehiclemodels.utils.vehicle_dynamics_ks_cog import vehicle_dynamics_ks_cog
 import vehiclemodels.utils.tire_model as tireModel
+
+__author__ = "Matthias Althoff"
+__copyright__ = "TUM Cyber-Physical Systems Group"
+__version__ = "2020a"
+__maintainer__ = "Gerald Würsching"
+__email__ = "commonroad@lists.lrz.de"
+__status__ = "Released"
 
 
 def vehicle_dynamics_mb(x, uInit, p):
-    # vehicleDynamics_MB - multi-body vehicle dynamics based on the DOT 
-    # (department of transportation) vehicle dynamics
-    #
-    # Syntax:  
-    #    f = vehicleDynamics_MB(t,x,u,p)
-    #
-    # Inputs:
-    #    x - vehicle state vector
-    #    u - vehicle input vector
-    #    p - vehicle parameter vector
-    #
-    # Outputs:
-    #    f - right-hand side of differential equations
-    #
-    # Example: 
-    #
-    # See also: ---
+    """
+    vehicleDynamics_mb - multi-body vehicle dynamics based on the DOT (department of transportation) vehicle dynamics
+    reference point: center of mass
 
-    # Author:       Matthias Althoff
-    # Written:      05-January-2017
-    # Last update:17-December-2017
-    # Last revision:---
+    Syntax:
+        f = vehicleDynamics_mb(x,u,p)
+
+    Inputs:
+        :param x: vehicle state vector
+        :param uInit: vehicle input vector
+        :param p: vehicle parameter vector
+
+    Outputs:
+        :return f: right-hand side of differential equations
+
+    Author: Matthias Althoff
+    Written: 05-January-2017
+    Last update: 17-December-2017
+    Last revision: ---
+    """
 
     #------------- BEGIN CODE --------------
 
@@ -184,10 +189,10 @@ def vehicle_dynamics_mb(x, uInit, p):
     F_x_RR = tireModel.formula_longitudinal_comb(s_rr, alpha_RR, F0_x_RR, p.tire)
 
     #compute lateral tire forces using the magic formula for combined slip
-    F_y_LF = tireModel.mFormulaLateralComb(s_lf, alpha_LF, gamma_LF, mu_y_LF, F_z_LF, F0_y_LF, p.tire) 
-    F_y_RF = tireModel.mFormulaLateralComb(s_rf, alpha_RF, gamma_RF, mu_y_RF, F_z_RF, F0_y_RF, p.tire) 
-    F_y_LR = tireModel.mFormulaLateralComb(s_lr, alpha_LR, gamma_LR, mu_y_LR, F_z_LR, F0_y_LR, p.tire) 
-    F_y_RR = tireModel.mFormulaLateralComb(s_rr, alpha_RR, gamma_RR, mu_y_RR, F_z_RR, F0_y_RR, p.tire) 
+    F_y_LF = tireModel.formula_lateral_comb(s_lf, alpha_LF, gamma_LF, mu_y_LF, F_z_LF, F0_y_LF, p.tire)
+    F_y_RF = tireModel.formula_lateral_comb(s_rf, alpha_RF, gamma_RF, mu_y_RF, F_z_RF, F0_y_RF, p.tire)
+    F_y_LR = tireModel.formula_lateral_comb(s_lr, alpha_LR, gamma_LR, mu_y_LR, F_z_LR, F0_y_LR, p.tire)
+    F_y_RR = tireModel.formula_lateral_comb(s_rr, alpha_RR, gamma_RR, mu_y_RR, F_z_RR, F0_y_RR, p.tire)
 
     #auxiliary movements for compliant joint equations
     delta_z_f = p.h_s - p.R_w + x[16] - x[11] 
@@ -270,13 +275,28 @@ def vehicle_dynamics_mb(x, uInit, p):
     #switch to kinematic model for small velocities
     if abs(x[3]) < 0.1:
         #wheelbase
-        lwb = p.a + p.b
+        # lwb = p.a + p.b
         
         #system dynamics
-        x_ks = [x[0],  x[1],  x[2],  x[3],  x[4]]
-        f_ks = vehicle_dynamics_ks(x_ks, u, p)
-        f.extend(f_ks)
-        f.append(u[1]*lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0])
+        # x_ks = [x[0],  x[1],  x[2],  x[3],  x[4]]
+        # f_ks = vehicle_dynamics_ks(x_ks, u, p)
+        # f.extend(f_ks)
+        # f.append(u[1]*lwb*math.tan(x[2]) + x[3]/(lwb*math.cos(x[2])**2)*u[0])
+
+        # Use kinematic model with reference point at center of mass
+        # wheelbase
+        lwb = p.a + p.b
+        # system dynamics
+        x_ks = [x[0], x[1], x[2], x[3], x[4]]
+        # kinematic model
+        f_ks = vehicle_dynamics_ks_cog(x_ks, u, p)
+        f = [f_ks[0], f_ks[1], f_ks[2], f_ks[3], f_ks[4]]
+        # derivative of slip angle and yaw rate
+        d_beta = (p.b * u[0]) / (lwb * math.cos(x[2]) ** 2 * (1 + (math.tan(x[2]) ** 2 * p.b / lwb) ** 2))
+        dd_psi = 1 / lwb * (u[1] * math.cos(x[6]) * math.tan(x[2]) -
+                            x[3] * math.sin(x[6]) * d_beta * math.tan(x[2]) +
+                            x[3] * math.cos(x[6]) * u[0] / math.cos(x[2]) ** 2)
+        f.append(dd_psi)
 
     else:
         f.append(math.cos(beta + x[4])*vel)

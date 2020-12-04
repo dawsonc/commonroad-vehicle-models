@@ -55,7 +55,15 @@ x = odeint(func_KS, x0_KS, t, args=(u, p))
 
 ## Contribute
 
-If you want to contribute new vehicle models, you can create a merge request in our [repository](https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/), or contact us per [e-mail](mailto:commonroad-i06@in.tum.de).
+If you want to contribute new vehicle models, you can create a merge request in our [repository](https://gitlab.lrz.de/tum-cps/commonroad-vehicle-models/), or contact via our [forum](https://commonroad.in.tum.de/forum/).
+
+
+## Changelog
+Compared to version 2019b the following features were added:
+* kinematic single-track model with on-axle trailer
+* vehicle parameter set for a semi-trailer truck (vehicle ID: 4)
+* single-track drift model: nonlinear single-track model with Pacejka tire forces
+
 
 ## Referencing
 

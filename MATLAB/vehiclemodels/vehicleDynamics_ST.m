@@ -1,5 +1,6 @@
 function f = vehicleDynamics_ST(x,u,p)
-% vehicleDynamics_ST - single-track vehicle dynamics 
+% vehicleDynamics_ST - single-track vehicle dynamics
+% reference point: center of mass
 %
 % Syntax:  
 %    f = vehicleDynamics_ST(x,u,p)
@@ -49,12 +50,20 @@ u(2) = accelerationConstraints(x(4),u(2),p.longitudinal);
 % switch to kinematic model for small velocities
 if abs(x(4)) < 0.1
     %wheelbase
-    lwb = p.a + p.b; 
-    
+    %lwb = p.a + p.b; 
     %system dynamics
-    f(1:5,1) = vehicleDynamics_KS(x(1:5),u,p);
-    f(6,1) = u(2)/lwb*tan(x(3)) + x(4)/(lwb*cos(x(3))^2)*u(1);
-    f(7,1) = 0;
+    %f(1:5,1) = vehicleDynamics_KS(x(1:5),u,p);
+    %f(6,1) = u(2)/lwb*tan(x(3)) + x(4)/(lwb*cos(x(3))^2)*u(1);
+    %f(7,1) = 0;
+    
+    % use kinematic model with ref point at center of mass
+    lwb = p.a + p.b;
+    %system dynamics
+    f(1:5,1) = vehicleDynamics_KS_cog(x(1:5),u,p);
+    d_beta = (p.b * u(1)) / (lwb*cos(x(3))^2 * (1 + (tan(x(3))^2 * p.b/lwb)^2));
+    dd_psi = 1/lwb * (u(2)*cos(x(7))*tan(x(3)) - x(3)*sin(x(7))*d_beta*tan(x(3)) + x(4)*cos(x(7))*u(1)/cos(x(3))^2);
+    f(6,1) = dd_psi;
+    f(7,1) = d_beta;
 else
 
     % set gravity constant

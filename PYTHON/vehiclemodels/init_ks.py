@@ -19,28 +19,27 @@ def init_ks(init_state):
     # Last update:  16-December-2017
     # Last revision:---
 
+    # ------------- BEGIN CODE --------------
 
-    #------------- BEGIN CODE --------------
+    # states
+    # x1 = x-position in a global coordinate system
+    # x2 = y-position in a global coordinate system
+    # x3 = steering angle of front wheels
+    # x4 = velocity in x-direction
+    # x5 = yaw angle
 
-    #states
-    #x1 = x-position in a global coordinate system
-    #x2 = y-position in a global coordinate system
-    #x3 = steering angle of front wheels
-    #x4 = velocity in x-direction
-    #x5 = yaw angle
+    # u1 = steering angle velocity of front wheels
+    # u2 = ongitudinal acceleration
 
-    #u1 = steering angle velocity of front wheels
-    #u2 = ongitudinal acceleration
-
-    #obtain initial states from vector
+    # obtain initial states from vector
     sx0 = init_state[0]
     sy0 = init_state[1]
     delta0 = init_state[2]
     vel0 = init_state[3]
     Psi0 = init_state[4]
 
-    #sprung mass states
-    x0 = [] # init initial state vector
+    # sprung mass states
+    x0 = []  # init initial state vector
     x0.append(sx0)  # x-position in a global coordinate system
     x0.append(sy0)  # y-position in a global coordinate system
     x0.append(delta0)  # steering angle of front wheels
@@ -49,4 +48,4 @@ def init_ks(init_state):
 
     return x0
 
-    #------------- END OF CODE --------------
+    # ------------- END OF CODE --------------

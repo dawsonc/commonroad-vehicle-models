@@ -216,3 +216,7 @@ TSWLatexianTemp*
 
 # pytest
 .coverage
+
+*.idea
+*.DS_Store
+*.egg-info

@@ -84,8 +84,8 @@ def formula_longitudinal_comb(kappa, alpha, F0_x, p):
         C_xalpha * math.atan(B_xalpha * alpha_s - E_xalpha * (B_xalpha * alpha_s - math.atan(B_xalpha * alpha_s))))
 
 
-# longitudinal tire forces for combined slip
-def mFormulaLateralComb(kappa, alpha, gamma, mu_y, F_z, F0_y, p):
+# lateral tire forces for combined slip
+def formula_lateral_comb(kappa, alpha, gamma, mu_y, F_z, F0_y, p):
     # turn slip is neglected, so xi_i=1
     # all scaling factors lambda = 1
 

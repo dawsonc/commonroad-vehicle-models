@@ -1,4 +1,4 @@
-#from parameters_vehicle1 import parameters_vehicle1
+import unittest
 from vehiclemodels.parameters_vehicle2 import parameters_vehicle2
 from vehiclemodels.init_ks import init_ks
 from vehiclemodels.init_st import init_st
@@ -8,7 +8,6 @@ from vehiclemodels.vehicle_dynamics_st import vehicle_dynamics_st
 from vehiclemodels.vehicle_dynamics_mb import vehicle_dynamics_mb
 from scipy.integrate import odeint
 import numpy
-#import matplotlib.pyplot as plt
 
 
 def func_KS(x, t, u, p):
@@ -24,6 +23,7 @@ def func_ST(x, t, u, p):
 def func_MB(x, t, u, p):
     f = vehicle_dynamics_mb(x, u, p)
     return f
+
 
 def test_zeroInitialVelocity():
   # test_zeroInitialVelocity - unit_test_function for starting with zero 
