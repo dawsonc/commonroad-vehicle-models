@@ -8,12 +8,12 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='commonroad-vehicle-models',
-    version='1.0.0',
-    description='Implementation of vehicle models with varying abstraction levels ranging from single track model to a multi-body model.',
+    version='2.0.0',
+    description='Implementation of vehicle models with varying abstraction levels ranging from kinematic single track model to a multi-body model.',
     keywords='autonomous automated vehicles driving motion planning',
     url='https://commonroad.in.tum.de/',
     author='Cyber-Physical Systems Group, Technical University of Munich',
-    author_email='commonroad-i06@in.tum.de',
+    author_email='commonroad@lists.lrz.de',
     packages=find_packages(exclude=['scripts']),
     long_description_content_type='text/markdown',
     long_description=readme,
