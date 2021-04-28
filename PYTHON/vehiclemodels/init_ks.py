@@ -1,7 +1,7 @@
 def init_ks(init_state):
     # init_KS - generates the initial state vector for the kinematic single-track model
 
-    # Syntax:  
+    # Syntax:
     #     x0 = init_KS(init_state, p)
     #
     # Inputs:
@@ -10,7 +10,7 @@ def init_ks(init_state):
     # Outputs:
     #     x0 - initial state vector
     #
-    # Example: 
+    # Example:
     #
     # See also: ---
 

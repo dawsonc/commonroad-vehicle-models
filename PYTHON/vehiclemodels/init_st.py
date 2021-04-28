@@ -1,7 +1,7 @@
 def init_st(init_state):
     # init_MB - generates the initial state vector for the single-track model
     #
-    # Syntax:  
+    # Syntax:
     #     x0 = init_ST(init_state, p)
     #
     # Inputs:
@@ -10,7 +10,7 @@ def init_st(init_state):
     # Outputs:
     #     x0 - initial state vector
     #
-    # Example: 
+    # Example:
     #
     # See also: ---
 
@@ -19,8 +19,9 @@ def init_st(init_state):
     # Last update:16-December-2017
     # Last revision:---
 
-    #------------- BEGIN CODE --------------
+    # ------------- BEGIN CODE --------------
 
     return init_state
 
-#------------- END OF CODE --------------
+
+# ------------- END OF CODE --------------

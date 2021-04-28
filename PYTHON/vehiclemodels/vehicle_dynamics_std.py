@@ -47,7 +47,7 @@ def vehicle_dynamics_std(x, u_init, p):
     # mix models parameters
     v_s = 0.2
     v_b = 0.05
-    v_min = v_s/2
+    v_min = v_s / 2
 
     # states
     # x1 = x-position in a global coordinate system
@@ -65,19 +65,35 @@ def vehicle_dynamics_std(x, u_init, p):
 
     # steering and acceleration constraints
     u = []
-    u.append(steering_constraints(x[2], u_init[0], p.steering))  # different name due to side effects of u
-    u.append(acceleration_constraints(x[3], u_init[1], p.longitudinal))  # different name due to side effect of u
+    u.append(
+        steering_constraints(x[2], u_init[0], p.steering)
+    )  # different name due to side effects of u
+    u.append(
+        acceleration_constraints(x[3], u_init[1], p.longitudinal)
+    )  # different name due to side effect of u
 
     # compute lateral tire slip angles
-    alpha_f = math.atan((x[3] * math.sin(x[6]) + x[5] * lf) / (x[3] * math.cos(x[6]))) - x[2] if x[3] > v_min else 0
-    alpha_r = math.atan((x[3] * math.sin(x[6]) - x[5] * lr) / (x[3] * math.cos(x[6]))) if x[3] > v_min else 0
+    alpha_f = (
+        math.atan((x[3] * math.sin(x[6]) + x[5] * lf) / (x[3] * math.cos(x[6]))) - x[2]
+        if x[3] > v_min
+        else 0
+    )
+    alpha_r = (
+        math.atan((x[3] * math.sin(x[6]) - x[5] * lr) / (x[3] * math.cos(x[6])))
+        if x[3] > v_min
+        else 0
+    )
 
     # compute vertical tire forces
     F_zf = m * (-u[1] * p.h_s + g * lr) / (lr + lf)
     F_zr = m * (u[1] * p.h_s + g * lf) / (lr + lf)
 
     # compute front and rear tire speeds
-    u_wf = max(0, x[3] * math.cos(x[6]) * math.cos(x[2]) + (x[3] * math.sin(x[6]) + p.a * x[5]) * math.sin(x[2]))
+    u_wf = max(
+        0,
+        x[3] * math.cos(x[6]) * math.cos(x[2])
+        + (x[3] * math.sin(x[6]) + p.a * x[5]) * math.sin(x[2]),
+    )
     u_wr = max(0, x[3] * math.cos(x[6]))
 
     # compute longitudinal tire slip
@@ -111,17 +127,46 @@ def vehicle_dynamics_std(x, u_init, p):
         T_E = m * p.R_w * u[1]
     else:
         T_B = m * p.R_w * u[1]
-        T_E = 0.
+        T_E = 0.0
 
     # system dynamics
-    d_v = 1 / m * (-F_yf * math.sin(x[2] - x[6]) + F_yr * math.sin(x[6]) + F_xr * math.cos(x[6]) + F_xf * math.cos(x[2] - x[6]))
-    dd_psi = 1 / I * (F_yf * math.cos(x[2]) * lf - F_yr * lr + F_xf * math.sin(x[2]) * lf)
-    d_beta = -x[5] + 1 / (m * x[3]) * (F_yf * math.cos(x[2] - x[6]) + F_yr * math.cos(x[6]) - F_xr * math.sin(x[6]) + F_xf * math.sin(x[2] - x[6])) if x[3] > v_min else 0
+    d_v = (
+        1
+        / m
+        * (
+            -F_yf * math.sin(x[2] - x[6])
+            + F_yr * math.sin(x[6])
+            + F_xr * math.cos(x[6])
+            + F_xf * math.cos(x[2] - x[6])
+        )
+    )
+    dd_psi = (
+        1 / I * (F_yf * math.cos(x[2]) * lf - F_yr * lr + F_xf * math.sin(x[2]) * lf)
+    )
+    d_beta = (
+        -x[5]
+        + 1
+        / (m * x[3])
+        * (
+            F_yf * math.cos(x[2] - x[6])
+            + F_yr * math.cos(x[6])
+            - F_xr * math.sin(x[6])
+            + F_xf * math.sin(x[2] - x[6])
+        )
+        if x[3] > v_min
+        else 0
+    )
 
     # wheel dynamics (negative wheel spin forbidden)
-    d_omega_f = 1 / p.I_y_w * (-p.R_w * F_xf + p.T_sb * T_B + p.T_se * T_E) if x[7] >= 0 else 0
+    d_omega_f = (
+        1 / p.I_y_w * (-p.R_w * F_xf + p.T_sb * T_B + p.T_se * T_E) if x[7] >= 0 else 0
+    )
     x[7] = max(0, x[7])
-    d_omega_r = 1 / p.I_y_w * (-p.R_w * F_xr + (1 - p.T_sb) * T_B + (1 - p.T_se) * T_E) if x[8] >= 0 else 0
+    d_omega_r = (
+        1 / p.I_y_w * (-p.R_w * F_xr + (1 - p.T_sb) * T_B + (1 - p.T_se) * T_E)
+        if x[8] >= 0
+        else 0
+    )
     x[8] = max(0, x[8])
 
     # *** Mix with kinematic model at low speeds ***
@@ -129,28 +174,38 @@ def vehicle_dynamics_std(x, u_init, p):
     x_ks = [x[0], x[1], x[2], x[3], x[4]]
     f_ks = vehicle_dynamics_ks_cog(x_ks, u, p)
     # derivative of slip angle and yaw rate (kinematic)
-    d_beta_ks = (p.b * u[0]) / (lwb * math.cos(x[2]) ** 2 * (1 + (math.tan(x[2]) ** 2 * p.b / lwb) ** 2))
-    dd_psi_ks = 1 / lwb * (u[1] * math.cos(x[6]) * math.tan(x[2]) -
-                        x[3] * math.sin(x[6]) * d_beta_ks * math.tan(x[2]) +
-                        x[3] * math.cos(x[6]) * u[0] / math.cos(x[2]) ** 2)
+    d_beta_ks = (p.b * u[0]) / (
+        lwb * math.cos(x[2]) ** 2 * (1 + (math.tan(x[2]) ** 2 * p.b / lwb) ** 2)
+    )
+    dd_psi_ks = (
+        1
+        / lwb
+        * (
+            u[1] * math.cos(x[6]) * math.tan(x[2])
+            - x[3] * math.sin(x[6]) * d_beta_ks * math.tan(x[2])
+            + x[3] * math.cos(x[6]) * u[0] / math.cos(x[2]) ** 2
+        )
+    )
     # derivative of angular speeds (kinematic)
     d_omega_f_ks = (1 / 0.02) * (u_wf / p.R_w - x[7])
     d_omega_r_ks = (1 / 0.02) * (u_wr / p.R_w - x[8])
 
     # weights for mixing both models
-    w_std = 0.5 * (math.tanh((x[3] - v_s)/v_b) + 1)
+    w_std = 0.5 * (math.tanh((x[3] - v_s) / v_b) + 1)
     w_ks = 1 - w_std
 
     # output vector: mix results of dynamic and kinematic model
-    f = [x[3] * math.cos(x[6] + x[4]),
-         x[3] * math.sin(x[6] + x[4]),
-         u[0],
-         w_std * d_v + w_ks * f_ks[3],
-         w_std * x[5] + w_ks * f_ks[4],
-         w_std * dd_psi + w_ks * dd_psi_ks,
-         w_std * d_beta + w_ks * d_beta_ks,
-         w_std * d_omega_f + w_ks * d_omega_f_ks,
-         w_std * d_omega_r + w_ks * d_omega_r_ks]
+    f = [
+        x[3] * math.cos(x[6] + x[4]),
+        x[3] * math.sin(x[6] + x[4]),
+        u[0],
+        w_std * d_v + w_ks * f_ks[3],
+        w_std * x[5] + w_ks * f_ks[4],
+        w_std * dd_psi + w_ks * dd_psi_ks,
+        w_std * d_beta + w_ks * d_beta_ks,
+        w_std * d_omega_f + w_ks * d_omega_f_ks,
+        w_std * d_omega_r + w_ks * d_omega_r_ks,
+    ]
 
     return f
 
@@ -175,72 +230,72 @@ if __name__ == "__main__":
 
     def plot_odeint(x_std, t):
         plt.plot([tmp[0] for tmp in x_std], [tmp[1] for tmp in x_std])
-        plt.title('position')
-        plt.xlabel('x')
-        plt.ylabel('y')
+        plt.title("position")
+        plt.xlabel("x")
+        plt.ylabel("y")
         plt.show()
 
         plt.plot(t, [tmp[2] for tmp in x_std])
-        plt.title('steering angle')
+        plt.title("steering angle")
         plt.show()
 
         plt.plot(t, [tmp[3] for tmp in x_std])
-        plt.title('velocity')
+        plt.title("velocity")
         plt.show()
 
         plt.plot(t, [tmp[4] for tmp in x_std])
-        plt.title('yaw angle')
+        plt.title("yaw angle")
         plt.show()
 
         plt.plot(t, [tmp[5] for tmp in x_std])
-        plt.title('yaw rate')
+        plt.title("yaw rate")
         plt.show()
 
         plt.plot(t, [tmp[6] for tmp in x_std])
-        plt.title('slip angle')
+        plt.title("slip angle")
         plt.show()
 
         plt.plot(t, [tmp[7] for tmp in x_std])
-        plt.title('omega front')
+        plt.title("omega front")
         plt.show()
 
         plt.plot(t, [tmp[8] for tmp in x_std])
-        plt.title('omega rear')
+        plt.title("omega rear")
         plt.show()
 
     def plot_solve_ivp(x_std):
         plt.plot(x_std.y[0], x_std.y[1])
-        plt.title('position')
-        plt.xlabel('x')
-        plt.ylabel('y')
+        plt.title("position")
+        plt.xlabel("x")
+        plt.ylabel("y")
         plt.show()
 
         plt.plot(x_std.t, x_std.y[2])
-        plt.title('steering angle')
+        plt.title("steering angle")
         plt.show()
 
         plt.plot(x_std.t, x_std.y[3])
-        plt.title('velocity')
+        plt.title("velocity")
         plt.show()
 
         plt.plot(x_std.t, x_std.y[4])
-        plt.title('yaw angle')
+        plt.title("yaw angle")
         plt.show()
 
         plt.plot(x_std.t, x_std.y[5])
-        plt.title('yaw rate')
+        plt.title("yaw rate")
         plt.show()
 
         plt.plot(x_std.t, x_std.y[6])
-        plt.title('slip angle')
+        plt.title("slip angle")
         plt.show()
 
         plt.plot(x_std.t, x_std.y[7])
-        plt.title('omega front')
+        plt.title("omega front")
         plt.show()
 
         plt.plot(x_std.t, x_std.y[8])
-        plt.title('omega rear')
+        plt.title("omega rear")
         plt.show()
 
     # load parameters
@@ -257,7 +312,15 @@ if __name__ == "__main__":
     dotPsi0 = 0
     beta0 = 0
     sy0 = 0
-    initialState = [0, sy0, delta0, vel0, Psi0, dotPsi0, beta0]  # initial state for simulation
+    initialState = [
+        0,
+        sy0,
+        delta0,
+        vel0,
+        Psi0,
+        dotPsi0,
+        beta0,
+    ]  # initial state for simulation
     x0_STD = init_std(initialState, p)  # initial state for multi-body model
     # --------------------------------------------------------------------------
 

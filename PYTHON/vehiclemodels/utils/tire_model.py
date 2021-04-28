@@ -32,7 +32,11 @@ def formula_longitudinal(kappa, gamma, F_z, p):
     B_x = K_x / (C_x * D_x)
 
     # magic tire formula
-    return D_x * math.sin(C_x * math.atan(B_x * kappa_x - E_x * (B_x * kappa_x - math.atan(B_x * kappa_x))) + S_vx)
+    return D_x * math.sin(
+        C_x
+        * math.atan(B_x * kappa_x - E_x * (B_x * kappa_x - math.atan(B_x * kappa_x)))
+        + S_vx
+    )
 
 
 # lateral tire forces
@@ -56,7 +60,16 @@ def formula_lateral(alpha, gamma, F_z, p):
     B_y = K_y / (C_y * D_y)
 
     # magic tire formula
-    F_y = D_y * math.sin(C_y * math.atan(B_y * alpha_y - E_y * (B_y * alpha_y - math.atan(B_y * alpha_y)))) + S_vy
+    F_y = (
+        D_y
+        * math.sin(
+            C_y
+            * math.atan(
+                B_y * alpha_y - E_y * (B_y * alpha_y - math.atan(B_y * alpha_y))
+            )
+        )
+        + S_vy
+    )
 
     res = []
     res.append(F_y)
@@ -76,12 +89,24 @@ def formula_longitudinal_comb(kappa, alpha, F0_x, p):
     B_xalpha = p.r_bx1 * math.cos(math.atan(p.r_bx2 * kappa))
     C_xalpha = p.r_cx1
     E_xalpha = p.r_ex1
-    D_xalpha = F0_x / (math.cos(C_xalpha * math.atan(
-        B_xalpha * S_hxalpha - E_xalpha * (B_xalpha * S_hxalpha - math.atan(B_xalpha * S_hxalpha)))))
+    D_xalpha = F0_x / (
+        math.cos(
+            C_xalpha
+            * math.atan(
+                B_xalpha * S_hxalpha
+                - E_xalpha * (B_xalpha * S_hxalpha - math.atan(B_xalpha * S_hxalpha))
+            )
+        )
+    )
 
     # magic tire formula
     return D_xalpha * math.cos(
-        C_xalpha * math.atan(B_xalpha * alpha_s - E_xalpha * (B_xalpha * alpha_s - math.atan(B_xalpha * alpha_s))))
+        C_xalpha
+        * math.atan(
+            B_xalpha * alpha_s
+            - E_xalpha * (B_xalpha * alpha_s - math.atan(B_xalpha * alpha_s))
+        )
+    )
 
 
 # lateral tire forces for combined slip
@@ -96,12 +121,30 @@ def formula_lateral_comb(kappa, alpha, gamma, mu_y, F_z, F0_y, p):
     B_ykappa = p.r_by1 * math.cos(math.atan(p.r_by2 * (alpha - p.r_by3)))
     C_ykappa = p.r_cy1
     E_ykappa = p.r_ey1
-    D_ykappa = F0_y / (math.cos(C_ykappa * math.atan(
-        B_ykappa * S_hykappa - E_ykappa * (B_ykappa * S_hykappa - math.atan(B_ykappa * S_hykappa)))))
+    D_ykappa = F0_y / (
+        math.cos(
+            C_ykappa
+            * math.atan(
+                B_ykappa * S_hykappa
+                - E_ykappa * (B_ykappa * S_hykappa - math.atan(B_ykappa * S_hykappa))
+            )
+        )
+    )
 
-    D_vykappa = mu_y * F_z * (p.r_vy1 + p.r_vy3 * gamma) * math.cos(math.atan(p.r_vy4 * alpha))
+    D_vykappa = (
+        mu_y * F_z * (p.r_vy1 + p.r_vy3 * gamma) * math.cos(math.atan(p.r_vy4 * alpha))
+    )
     S_vykappa = D_vykappa * math.sin(p.r_vy5 * math.atan(p.r_vy6 * kappa))
 
     # magic tire formula
-    return D_ykappa * math.cos(C_ykappa * math.atan(
-        B_ykappa * kappa_s - E_ykappa * (B_ykappa * kappa_s - math.atan(B_ykappa * kappa_s)))) + S_vykappa
+    return (
+        D_ykappa
+        * math.cos(
+            C_ykappa
+            * math.atan(
+                B_ykappa * kappa_s
+                - E_ykappa * (B_ykappa * kappa_s - math.atan(B_ykappa * kappa_s))
+            )
+        )
+        + S_vykappa
+    )

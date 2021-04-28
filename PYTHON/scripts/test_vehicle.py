@@ -53,7 +53,15 @@ Psi0 = 0
 dotPsi0 = 0
 beta0 = 0
 sy0 = 0
-initialState = [0, sy0, delta0, vel0, Psi0, dotPsi0, beta0]  # initial state for simulation
+initialState = [
+    0,
+    sy0,
+    delta0,
+    vel0,
+    Psi0,
+    dotPsi0,
+    beta0,
+]  # initial state for simulation
 x0_KS = init_ks(initialState)  # initial state for kinematic single-track model
 x0_ST = init_st(initialState)  # initial state for single-track model
 x0_MB = init_mb(initialState, p)  # initial state for multi-body model
@@ -76,25 +84,25 @@ def cornering_left(v_delta, a_long):
     x_left_ks = odeint(func_KS, x0_KS, t, args=(u, p))
 
     # simulate single-track drift model
-    x_left_std = odeint(func_STD, x0_STD, t, args=(u,p))
+    x_left_std = odeint(func_STD, x0_STD, t, args=(u, p))
 
     # results
     # position
-    title('positions turning')
+    title("positions turning")
     plt.plot([tmp[0] for tmp in x_left], [tmp[1] for tmp in x_left])
     plt.plot([tmp[0] for tmp in x_left_st], [tmp[1] for tmp in x_left_st])
     plt.plot([tmp[0] for tmp in x_left_ks], [tmp[1] for tmp in x_left_ks])
     plt.plot([tmp[0] for tmp in x_left_std], [tmp[1] for tmp in x_left_std])
-    legend(['MB', 'ST', 'KS', 'STD'])
+    legend(["MB", "ST", "KS", "STD"])
     plt.autoscale()
     plt.show()
 
     # slip angle
-    title('slip angle turning')
+    title("slip angle turning")
     plt.plot(t, [tmp[10] / tmp[3] for tmp in x_left])
     plt.plot(t, [tmp[6] for tmp in x_left_st])
     plt.plot(t, [tmp[6] for tmp in x_left_std])
-    legend(['MB', 'ST', 'STD'])
+    legend(["MB", "ST", "STD"])
     plt.show()
 
 
@@ -107,7 +115,7 @@ def oversteer_understeer_MB():
     x_coast = odeint(func_MB, x0_MB, t, args=(u, p))
 
     # braking
-    u = [v_delta, -0.7*g]
+    u = [v_delta, -0.7 * g]
     x_brake = odeint(func_MB, x0_MB, t, args=(u, p))
 
     # accelerating
@@ -115,32 +123,32 @@ def oversteer_understeer_MB():
     x_acc = odeint(func_MB, x0_MB, t, args=(u, p))
 
     # position
-    title('position comparison MB')
+    title("position comparison MB")
     plt.plot([tmp[0] for tmp in x_coast], [tmp[1] for tmp in x_coast])
     plt.plot([tmp[0] for tmp in x_brake], [tmp[1] for tmp in x_brake])
     plt.plot([tmp[0] for tmp in x_acc], [tmp[1] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
     # slip angles
-    title('slip angle comparison MB')
+    title("slip angle comparison MB")
     plt.plot(t, [tmp[10] / tmp[3] for tmp in x_coast])
     plt.plot(t, [tmp[10] / tmp[3] for tmp in x_brake])
     plt.plot(t, [tmp[10] / tmp[3] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
     # orientation
-    title('orientation comparison MB')
+    title("orientation comparison MB")
     plt.plot(t, [tmp[4] for tmp in x_coast])
     plt.plot(t, [tmp[4] for tmp in x_brake])
     plt.plot(t, [tmp[4] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
     # pitch
-    title('pitch comparison MB')
+    title("pitch comparison MB")
     plt.plot(t, [tmp[8] for tmp in x_coast])
     plt.plot(t, [tmp[8] for tmp in x_brake])
     plt.plot(t, [tmp[8] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
 
 
@@ -161,25 +169,25 @@ def oversteer_understeer_STD():
     x_acc = odeint(func_STD, x0_STD, t, args=(u, p))
 
     # position
-    title('position comparison STD')
+    title("position comparison STD")
     plt.plot([tmp[0] for tmp in x_coast], [tmp[1] for tmp in x_coast])
     plt.plot([tmp[0] for tmp in x_brake], [tmp[1] for tmp in x_brake])
     plt.plot([tmp[0] for tmp in x_acc], [tmp[1] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
     # compare slip angles
-    title('slip angle comparison STD')
+    title("slip angle comparison STD")
     plt.plot(t, [tmp[6] for tmp in x_coast])
     plt.plot(t, [tmp[6] for tmp in x_brake])
     plt.plot(t, [tmp[6] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
     # orientation
-    title('orientation comparison STD')
+    title("orientation comparison STD")
     plt.plot(t, [tmp[4] for tmp in x_coast])
     plt.plot(t, [tmp[4] for tmp in x_brake])
     plt.plot(t, [tmp[4] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
 
 
@@ -200,25 +208,25 @@ def oversteer_understeer_ST():
     x_acc = odeint(func_ST, x0_ST, t, args=(u, p))
 
     # position
-    title('position comparison ST')
+    title("position comparison ST")
     plt.plot([tmp[0] for tmp in x_coast], [tmp[1] for tmp in x_coast])
     plt.plot([tmp[0] for tmp in x_brake], [tmp[1] for tmp in x_brake])
     plt.plot([tmp[0] for tmp in x_acc], [tmp[1] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
     # compare slip angles
-    title('slip angle comparison ST')
+    title("slip angle comparison ST")
     plt.plot(t, [tmp[6] for tmp in x_coast])
     plt.plot(t, [tmp[6] for tmp in x_brake])
     plt.plot(t, [tmp[6] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
     # orientation
-    title('orientation comparison ST')
+    title("orientation comparison ST")
     plt.plot(t, [tmp[4] for tmp in x_coast])
     plt.plot(t, [tmp[4] for tmp in x_brake])
     plt.plot(t, [tmp[4] for tmp in x_acc])
-    legend(['coasting', 'braking', 'accelerating'])
+    legend(["coasting", "braking", "accelerating"])
     plt.show()
 
 
@@ -235,25 +243,25 @@ def braking():
     # position
     plt.plot([tmp[0] for tmp in x_brake], [tmp[1] for tmp in x_brake])
     plt.plot([tmp[0] for tmp in x_brake_STD], [tmp[1] for tmp in x_brake_STD])
-    plt.title('position')
-    legend(['MB', 'STD'])
+    plt.title("position")
+    legend(["MB", "STD"])
     plt.show()
 
     # velocity
     plt.plot(t, [tmp[3] for tmp in x_brake])
-    plt.plot(t, [tmp[3]*math.cos(tmp[6]) for tmp in x_brake_STD])
-    plt.title('velocity')
-    legend(['MB', 'STD'])
+    plt.plot(t, [tmp[3] * math.cos(tmp[6]) for tmp in x_brake_STD])
+    plt.title("velocity")
+    legend(["MB", "STD"])
     plt.show()
 
     # wheel spin
-    title('wheel spin MB braking')
+    title("wheel spin MB braking")
     plt.plot(t, [tmp[23] for tmp in x_brake])
     plt.plot(t, [tmp[24] for tmp in x_brake])
     plt.plot(t, [tmp[25] for tmp in x_brake])
     plt.plot(t, [tmp[26] for tmp in x_brake])
     plt.show()
-    title('wheel spin STD braking')
+    title("wheel spin STD braking")
     plt.plot(t, [tmp[7] for tmp in x_brake_STD])
     plt.plot(t, [tmp[8] for tmp in x_brake_STD])
     plt.show()
@@ -272,32 +280,32 @@ def accelerating():
     # position
     plt.plot([tmp[0] for tmp in x_acc], [tmp[1] for tmp in x_acc])
     plt.plot([tmp[0] for tmp in x_acc_STD], [tmp[1] for tmp in x_acc_STD])
-    plt.title('position')
-    legend(['MB', 'STD'])
+    plt.title("position")
+    legend(["MB", "STD"])
     plt.show()
 
     # velocity
     plt.plot(t, [tmp[3] for tmp in x_acc])
     plt.plot(t, [tmp[3] * math.cos(tmp[6]) for tmp in x_acc_STD])
-    plt.title('velocity')
-    legend(['MB', 'STD'])
+    plt.title("velocity")
+    legend(["MB", "STD"])
     plt.show()
 
     # wheel spin
-    title('wheel spin MB')
+    title("wheel spin MB")
     plt.plot(t, [tmp[23] for tmp in x_acc])
     plt.plot(t, [tmp[24] for tmp in x_acc])
     plt.plot(t, [tmp[25] for tmp in x_acc])
     plt.plot(t, [tmp[26] for tmp in x_acc])
     plt.show()
-    title('wheel spin STD')
+    title("wheel spin STD")
     plt.plot(t, [tmp[7] for tmp in x_acc_STD])
     plt.plot(t, [tmp[8] for tmp in x_acc_STD])
     plt.show()
 
 
 # run simulations *****************
-if __name__ == '__main__':
+if __name__ == "__main__":
     # cornering_left(0.15, 0)
     # oversteer_understeer_MB()
     # oversteer_understeer_STD()

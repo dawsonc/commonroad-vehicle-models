@@ -1,4 +1,4 @@
-class TireParameters():
+class TireParameters:
     def __init__(self):
         # tire parameters from ADAMS handbook
         # longitudinal coefficients

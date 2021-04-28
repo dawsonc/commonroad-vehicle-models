@@ -35,8 +35,10 @@ def init_std(init_state, p):
 
     # create initial state vector
     x0 = init_state.copy()
-    x0.append(x0[3]*math.cos(x0[6])*math.cos(x0[2])/p.R_w)  # init front wheel angular speed
-    x0.append(x0[3]*math.cos(x0[6])/p.R_w)  # init rear wheel angular speed
+    x0.append(
+        x0[3] * math.cos(x0[6]) * math.cos(x0[2]) / p.R_w
+    )  # init front wheel angular speed
+    x0.append(x0[3] * math.cos(x0[6]) / p.R_w)  # init rear wheel angular speed
 
     return x0
 

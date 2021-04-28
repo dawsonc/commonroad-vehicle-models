@@ -2,7 +2,7 @@ def acceleration_constraints(velocity, acceleration, p):
     # accelerationConstraints - adjusts the acceleration based on acceleration
     # constraints
     #
-    # Syntax:  
+    # Syntax:
     #    accelerationConstraints(velocity,acceleration,p)
     #
     # Inputs:
@@ -13,7 +13,7 @@ def acceleration_constraints(velocity, acceleration, p):
     # Outputs:
     #    acceleration - acceleration in driving direction
     #
-    # Example: 
+    # Example:
     #
     # Other m-files required: none
     # Subfunctions: none
@@ -35,7 +35,9 @@ def acceleration_constraints(velocity, acceleration, p):
         posLimit = p.a_max
 
     # acceleration limit reached?
-    if (velocity <= p.v_min and acceleration <= 0) or (velocity >= p.v_max and acceleration >= 0):
+    if (velocity <= p.v_min and acceleration <= 0) or (
+        velocity >= p.v_max and acceleration >= 0
+    ):
         acceleration = 0
     elif acceleration <= -p.a_max:
         acceleration = -p.a_max

@@ -4,7 +4,7 @@ import math
 def init_mb(init_state, p):
     # init_MB - generates the initial state vector for the multi-body model
     #
-    # Syntax:  
+    # Syntax:
     #     x0 = init_MB(init_state, p)
     #
     # Inputs:
@@ -14,7 +14,7 @@ def init_mb(init_state, p):
     # Outputs:
     #     x0 - initial state vector
     #
-    # Example: 
+    # Example:
     #
     # See also: ---
 

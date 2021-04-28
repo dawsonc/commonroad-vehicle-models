@@ -2,7 +2,7 @@ def steering_constraints(steering_angle, steering_velocity, p):
     # steeringConstraints - adjusts the steering velocity based on steering
     # constraints
     #
-    # Syntax:  
+    # Syntax:
     #    steeringConstraints(steering_angle,steering_velocity,p)
     #
     # Inputs:
@@ -13,7 +13,7 @@ def steering_constraints(steering_angle, steering_velocity, p):
     # Outputs:
     #    steering_velocity - steering velocity
     #
-    # Example: 
+    # Example:
     #
     # Other m-files required: none
     # Subfunctions: none
@@ -29,7 +29,9 @@ def steering_constraints(steering_angle, steering_velocity, p):
     # ------------- BEGIN CODE --------------
 
     # steering limit reached?
-    if (steering_angle <= p.min and steering_velocity <= 0) or (steering_angle >= p.max and steering_velocity >= 0):
+    if (steering_angle <= p.min and steering_velocity <= 0) or (
+        steering_angle >= p.max and steering_velocity >= 0
+    ):
         steering_velocity = 0
     elif steering_velocity <= p.v_min:
         steering_velocity = p.v_min

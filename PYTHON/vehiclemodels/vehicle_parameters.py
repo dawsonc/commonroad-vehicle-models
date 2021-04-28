@@ -12,10 +12,10 @@ class VehicleParameters:
         self.l = None
         self.w = None
 
-        # steering parameters 
+        # steering parameters
         self.steering = SteeringParameters()
 
-        # longitudinal parameters 
+        # longitudinal parameters
         self.longitudinal = LongitudinalParameters()
 
         # masses
@@ -25,8 +25,12 @@ class VehicleParameters:
         self.m_ur = None
 
         # axes distances
-        self.a = None  # distance from spring mass center of gravity to front axle [m]  LENA
-        self.b = None  # distance from spring mass center of gravity to rear axle [m]  LENB
+        self.a = (
+            None  # distance from spring mass center of gravity to front axle [m]  LENA
+        )
+        self.b = (
+            None  # distance from spring mass center of gravity to rear axle [m]  LENB
+        )
 
         # moments of inertia of sprung mass
         self.I_Phi_s = None  # moment of inertia for sprung mass in roll [kg m^2]  IXS
@@ -73,7 +77,7 @@ class VehicleParameters:
         self.E_f = None  # [needs conversion if nonzero]  EF
         self.E_r = None  # [needs conversion if nonzero]  ER
 
-        # tire parameters 
+        # tire parameters
         self.tire = TireParameters()
 
         # trailer parameters

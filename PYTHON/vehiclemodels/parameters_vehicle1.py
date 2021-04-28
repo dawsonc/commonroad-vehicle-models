@@ -3,11 +3,11 @@ from vehiclemodels.vehicle_parameters import VehicleParameters
 
 
 def parameters_vehicle1():
-    # parameters_vehicle1 - parameter set of the multi-body vehicle dynamics 
-    # based on the DOT (department of transportation) vehicle dynamics 
+    # parameters_vehicle1 - parameter set of the multi-body vehicle dynamics
+    # based on the DOT (department of transportation) vehicle dynamics
     # values are taken from a Ford Escort
     #
-    # Syntax:  
+    # Syntax:
     #    p = parameters_vehicle1()
     #
     # Inputs:
@@ -16,7 +16,7 @@ def parameters_vehicle1():
     # Outputs:
     #    p - parameter vector
     #
-    # Example: 
+    # Example:
     #
     # Subfunctions: none
     #
@@ -56,50 +56,84 @@ def parameters_vehicle1():
     p.m_ur = unitConversion.lb_sec2_ft_IN_kg(4.5)  # unsprung mass rear [kg]  UMASSR
 
     # axes distances
-    p.a = unitConversion.ft_IN_m(2.9)  # distance from spring mass center of gravity to front axle [m]  LENA
-    p.b = unitConversion.ft_IN_m(4.95)  # distance from spring mass center of gravity to rear axle [m]  LENB
+    p.a = unitConversion.ft_IN_m(
+        2.9
+    )  # distance from spring mass center of gravity to front axle [m]  LENA
+    p.b = unitConversion.ft_IN_m(
+        4.95
+    )  # distance from spring mass center of gravity to rear axle [m]  LENB
 
     # moments of inertia of sprung mass
-    p.I_Phi_s = unitConversion.lb_ft_sec2_IN_kg_m2(180)  # moment of inertia for sprung mass in roll [kg m^2]  IXS
-    p.I_y_s = unitConversion.lb_ft_sec2_IN_kg_m2(990)  # moment of inertia for sprung mass in pitch [kg m^2]  IYS
-    p.I_z = unitConversion.lb_ft_sec2_IN_kg_m2(1135)  # moment of inertia for sprung mass in yaw [kg m^2]  IZZ
-    p.I_xz_s = unitConversion.lb_ft_sec2_IN_kg_m2(0)  # moment of inertia cross product [kg m^2]  IXZ
+    p.I_Phi_s = unitConversion.lb_ft_sec2_IN_kg_m2(
+        180
+    )  # moment of inertia for sprung mass in roll [kg m^2]  IXS
+    p.I_y_s = unitConversion.lb_ft_sec2_IN_kg_m2(
+        990
+    )  # moment of inertia for sprung mass in pitch [kg m^2]  IYS
+    p.I_z = unitConversion.lb_ft_sec2_IN_kg_m2(
+        1135
+    )  # moment of inertia for sprung mass in yaw [kg m^2]  IZZ
+    p.I_xz_s = unitConversion.lb_ft_sec2_IN_kg_m2(
+        0
+    )  # moment of inertia cross product [kg m^2]  IXZ
 
     # suspension parameters
-    p.K_sf = unitConversion.lbs_ft_IN_N_m(1500)  # suspension spring rate (front) [N/m]  KSF
-    p.K_sdf = unitConversion.lb_sec_ft_IN_N_s_m(100)  # suspension damping rate (front) [N s/m]  KSDF
-    p.K_sr = unitConversion.lbs_ft_IN_N_m(1500)  # suspension spring rate (rear) [N/m]  KSR
-    p.K_sdr = unitConversion.lb_sec_ft_IN_N_s_m(100)  # suspension damping rate (rear) [N s/m]  KSDR
+    p.K_sf = unitConversion.lbs_ft_IN_N_m(
+        1500
+    )  # suspension spring rate (front) [N/m]  KSF
+    p.K_sdf = unitConversion.lb_sec_ft_IN_N_s_m(
+        100
+    )  # suspension damping rate (front) [N s/m]  KSDF
+    p.K_sr = unitConversion.lbs_ft_IN_N_m(
+        1500
+    )  # suspension spring rate (rear) [N/m]  KSR
+    p.K_sdr = unitConversion.lb_sec_ft_IN_N_s_m(
+        100
+    )  # suspension damping rate (rear) [N s/m]  KSDR
 
     # geometric parameters
     p.T_f = unitConversion.ft_IN_m(4.56)  # track width front [m]  TRWF
     p.T_r = unitConversion.ft_IN_m(4.67)  # track width rear [m]  TRWB
     p.K_ras = unitConversion.lbs_ft_IN_N_m(
-        12000)  # lateral spring rate at compliant compliant pin joint between M_s and M_u [N/m]  KRAS
+        12000
+    )  # lateral spring rate at compliant compliant pin joint between M_s and M_u [N/m]  KRAS
 
     p.K_tsf = unitConversion.ft_lb_rad_IN_N_m_rad(
-        -9500)  # auxiliary torsion roll stiffness per axle (normally negative) (front) [N m/rad]  KTSF
+        -9500
+    )  # auxiliary torsion roll stiffness per axle (normally negative) (front) [N m/rad]  KTSF
     p.K_tsr = unitConversion.ft_lb_rad_IN_N_m_rad(
-        0)  # auxiliary torsion roll stiffness per axle (normally negative) (rear) [N m/rad]  KTSR
+        0
+    )  # auxiliary torsion roll stiffness per axle (normally negative) (rear) [N m/rad]  KTSR
     p.K_rad = unitConversion.lb_sec_ft_IN_N_s_m(
-        700)  # damping rate at compliant compliant pin joint between M_s and M_u [N s/m]  KRADP
-    p.K_zt = unitConversion.lbs_ft_IN_N_m(13000)  # vertical spring rate of tire [N/m]  TSPRINGR
+        700
+    )  # damping rate at compliant compliant pin joint between M_s and M_u [N s/m]  KRADP
+    p.K_zt = unitConversion.lbs_ft_IN_N_m(
+        13000
+    )  # vertical spring rate of tire [N/m]  TSPRINGR
 
     p.h_cg = unitConversion.ft_IN_m(
-        1.83)  # center of gravity height of total mass [m]  HCG (mainly required for conversion to other vehicle models)
-    p.h_raf = unitConversion.ft_IN_m(0)  # height of roll axis above ground (front) [m]  HRAF
-    p.h_rar = unitConversion.ft_IN_m(0)  # height of roll axis above ground (rear) [m]  HRAR
+        1.83
+    )  # center of gravity height of total mass [m]  HCG (mainly required for conversion to other vehicle models)
+    p.h_raf = unitConversion.ft_IN_m(
+        0
+    )  # height of roll axis above ground (front) [m]  HRAF
+    p.h_rar = unitConversion.ft_IN_m(
+        0
+    )  # height of roll axis above ground (rear) [m]  HRAR
 
     p.h_s = unitConversion.ft_IN_m(1.95)  # M_s center of gravity above ground [m]  HS
 
     p.I_uf = unitConversion.lb_ft_sec2_IN_kg_m2(
-        24)  # moment of inertia for unsprung mass about x-axis (front) [kg m^2]  IXUF
+        24
+    )  # moment of inertia for unsprung mass about x-axis (front) [kg m^2]  IXUF
     p.I_ur = unitConversion.lb_ft_sec2_IN_kg_m2(
-        24)  # moment of inertia for unsprung mass about x-axis (rear) [kg m^2]  IXUR
+        24
+    )  # moment of inertia for unsprung mass about x-axis (rear) [kg m^2]  IXUR
     p.I_y_w = 1.7  # wheel inertia, from internet forum for 235/65 R 17 [kg m^2]
 
     p.K_lt = unitConversion.ft_lb_IN_m_N(
-        0.00015)  # lateral compliance rate of tire, wheel, and suspension, per tire [m/N]  KLT
+        0.00015
+    )  # lateral compliance rate of tire, wheel, and suspension, per tire [m/N]  KLT
     p.R_w = 0.344  # effective wheel/tire radius  chosen as tire rolling radius RR  taken from ADAMS documentation [m]
 
     # split of brake and engine torque

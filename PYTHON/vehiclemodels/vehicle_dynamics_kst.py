@@ -36,7 +36,7 @@ def vehicle_dynamics_kst(x, u_init, p):
     # ------------- BEGIN CODE --------------
 
     # create equivalent kinematic single-track parameters
-    l_wb = p.a + p.b        # wheel base
+    l_wb = p.a + p.b  # wheel base
     l_wbt = p.trailer.l_wb  # wheel base trailer
 
     # states
@@ -53,24 +53,30 @@ def vehicle_dynamics_kst(x, u_init, p):
 
     u = []
     # consider steering constraints
-    u.append(steering_constraints(x[2], u_init[0], p.steering))  # different name uInit/u due to side effects of u
+    u.append(
+        steering_constraints(x[2], u_init[0], p.steering)
+    )  # different name uInit/u due to side effects of u
     # consider acceleration constraints
-    u.append(acceleration_constraints(x[3], u_init[1], p.longitudinal))  # different name uInit/u due to side effects of u
+    u.append(
+        acceleration_constraints(x[3], u_init[1], p.longitudinal)
+    )  # different name uInit/u due to side effects of u
 
     # hitch angle constraints
-    if -math.pi/2 <= x[5] <= math.pi/2:
+    if -math.pi / 2 <= x[5] <= math.pi / 2:
         d_alpha = -x[3] * (math.sin(x[5]) / l_wbt + math.tan(x[2]) / l_wb)
     else:
         d_alpha = 0
-        x[5] = -math.pi/2 if x[5] < -math.pi/2 else math.pi/2
+        x[5] = -math.pi / 2 if x[5] < -math.pi / 2 else math.pi / 2
 
     # system dynamics
-    f = [x[3] * math.cos(x[4]),
-         x[3] * math.sin(x[4]),
-         u[0],
-         u[1],
-         x[3] / l_wb * math.tan(x[2]),
-         d_alpha]
+    f = [
+        x[3] * math.cos(x[4]),
+        x[3] * math.sin(x[4]),
+        u[0],
+        u[1],
+        x[3] / l_wb * math.tan(x[2]),
+        d_alpha,
+    ]
 
     return f
 

@@ -34,8 +34,12 @@ def parameters_vehicle4():
     p.steering.v_max = 0.7103  # maximum steering velocity [rad/s]
 
     # longitudinal constraints
-    p.longitudinal.v_min = -2.78  # minimum velocity [m/s]  # approximate value: -10 km/h
-    p.longitudinal.v_max = 22.22  # minimum velocity [m/s]   # approximate value: 80 km/h
+    p.longitudinal.v_min = (
+        -2.78
+    )  # minimum velocity [m/s]  # approximate value: -10 km/h
+    p.longitudinal.v_max = (
+        22.22  # minimum velocity [m/s]   # approximate value: 80 km/h
+    )
     p.longitudinal.v_switch = 7.824  # switching velocity [m/s]
     p.longitudinal.a_max = 11.5  # maximum absolute acceleration [m/s^2]
 
@@ -51,5 +55,6 @@ def parameters_vehicle4():
     p.trailer.l_wb = 8.1  # trailer wheelbase
 
     return p
+
 
 # ------------- END OF CODE --------------
