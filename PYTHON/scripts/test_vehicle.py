@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import title, legend
 import math
 
-from PYTHON.vehiclemodels.parameters_vehicle2 import parameters_vehicle2
-from PYTHON.vehiclemodels.init_ks import init_ks
-from PYTHON.vehiclemodels.init_st import init_st
-from PYTHON.vehiclemodels.init_mb import init_mb
-from PYTHON.vehiclemodels.init_std import init_std
-from PYTHON.vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
-from PYTHON.vehiclemodels.vehicle_dynamics_st import vehicle_dynamics_st
-from PYTHON.vehiclemodels.vehicle_dynamics_mb import vehicle_dynamics_mb
-from PYTHON.vehiclemodels.vehicle_dynamics_std import vehicle_dynamics_std
+from vehiclemodels.parameters_vehicle2 import parameters_vehicle2
+from vehiclemodels.init_ks import init_ks
+from vehiclemodels.init_st import init_st
+from vehiclemodels.init_mb import init_mb
+from vehiclemodels.init_std import init_std
+from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+from vehiclemodels.vehicle_dynamics_st import vehicle_dynamics_st
+from vehiclemodels.vehicle_dynamics_mb import vehicle_dynamics_mb
+from vehiclemodels.vehicle_dynamics_std import vehicle_dynamics_std
 
 
 def func_KS(x, t, u, p):
