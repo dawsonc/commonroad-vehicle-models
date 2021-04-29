@@ -1,8 +1,19 @@
 import math
 
-from vehiclemodels.utils.steering_constraints import steering_constraints
-from vehiclemodels.utils.acceleration_constraints import acceleration_constraints
-from vehiclemodels.utils.vehicle_dynamics_ks_cog import vehicle_dynamics_ks_cog
+import torch
+
+from vehiclemodels.utils.acceleration_constraints import (
+    acceleration_constraints,
+    torch_acceleration_constraints,
+)
+from vehiclemodels.utils.steering_constraints import (
+    steering_constraints,
+    torch_steering_constraints,
+)
+from vehiclemodels.utils.vehicle_dynamics_ks_cog import (
+    vehicle_dynamics_ks_cog,
+    torch_vehicle_dynamics_ks_cog,
+)
 
 __author__ = "Matthias Althoff"
 __copyright__ = "TUM Cyber-Physical Systems Group"
@@ -133,6 +144,154 @@ def vehicle_dynamics_st(x, uInit, p):
             * x[6]
             + mu / (x[3] * (lr + lf)) * (C_Sf * (g * lr - u[1] * h)) * x[2],
         ]
+
+    return f
+
+    # ------------- END OF CODE --------------
+
+
+def torch_vehicle_dynamics_st(x, u_init, p):
+    """
+    vehicleDynamics_st - single-track vehicle dynamics
+    reference point: center of mass
+
+    Syntax:
+        f = vehicleDynamics_st(x,u,p)
+
+    Inputs:
+        :param x: bs x n_states vehicle state vector
+        :param u_init: bs x n_controls vehicle input vector
+        :param p: vehicle parameter vector
+
+    Outputs:
+        :return f: right-hand side of differential equations
+
+    Author: Matthias Althoff
+    Written: 12-January-2017
+    Last update: 16-December-2017
+                 03-September-2019
+    Last revision: 17-November-2020
+    """
+
+    # ------------- BEGIN CODE --------------
+
+    # set gravity constant
+    g = 9.81  # [m/s^2]
+
+    # create equivalent bicycle parameters
+    mu = p.tire.p_dy1
+    C_Sf = -p.tire.p_ky1 / p.tire.p_dy1
+    C_Sr = -p.tire.p_ky1 / p.tire.p_dy1
+    lf = p.a
+    lr = p.b
+    h = p.h_s
+    m = p.m
+    I = p.I_z
+
+    # states
+    # x1 = x-position in a global coordinate system
+    # x2 = y-position in a global coordinate system
+    # x3 = steering angle of front wheels
+    # x4 = velocity in x-direction
+    # x5 = yaw angle
+    # x6 = yaw rate
+    # x7 = slip angle at vehicle center
+
+    # u1 = steering angle velocity of front wheels
+    # u2 = longitudinal acceleration
+
+    # consider steering constraints
+    u = torch.zeros_like(u_init)
+    u[:, 0] = torch_steering_constraints(x[:, 2], u_init[:, 0], p.steering)
+    u[:, 1] = torch_acceleration_constraints(x[:, 3], u_init[:, 1], p.longitudinal)
+
+    # Create somewhere to store the dynamics
+    f = torch.zeros_like(x)
+
+    # Use kinematic model for small velocities
+    low_v = x[:, 3].abs() < 0.1
+    # Use kinematic model with reference point at center of mass
+    # wheelbase
+    lwb = p.a + p.b
+    # system dynamics
+    x_ks = x[low_v, :5]
+    # kinematic model
+    f_ks = torch_vehicle_dynamics_ks_cog(x_ks, u[low_v, :], p)
+    f[low_v, :5] = f_ks
+    # derivative of slip angle and yaw rate
+    d_beta = (p.b * u[low_v, 0]) / (
+        lwb
+        * torch.cos(x[low_v, 2]) ** 2
+        * (1 + (torch.tan(x[low_v, 2]) ** 2 * p.b / lwb) ** 2)
+    )
+    dd_psi = (
+        1
+        / lwb
+        * (
+            u[low_v, 1] * torch.cos(x[low_v, 6]) * torch.tan(x[low_v, 2])
+            - x[low_v, 3] * torch.sin(x[low_v, 6]) * d_beta * torch.tan(x[low_v, 2])
+            + x[low_v, 3]
+            * torch.cos(x[low_v, 6])
+            * u[low_v, 0]
+            / torch.cos(x[low_v, 2]) ** 2
+        )
+    )
+    f[low_v, 5] = dd_psi
+    f[low_v, 6] = d_beta
+
+    # Use the full model for higher velocities
+    high_v = torch.logical_not(low_v)
+    # system dynamics
+    f[high_v, 0] = x[high_v, 3] * torch.cos(x[high_v, 6] + x[high_v, 4])
+    f[high_v, 1] = x[high_v, 3] * torch.sin(x[high_v, 6] + x[high_v, 4])
+    f[high_v, 2] = u[high_v, 0]
+    f[high_v, 3] = u[high_v, 1]
+    f[high_v, 4] = x[high_v, 5]
+    f[high_v, 5] = (
+        -mu
+        * m
+        / (x[high_v, 3] * I * (lr + lf))
+        * (
+            lf ** 2 * C_Sf * (g * lr - u[high_v, 1] * h)
+            + lr ** 2 * C_Sr * (g * lf + u[high_v, 1] * h)
+        )
+        * x[high_v, 5]
+        + mu
+        * m
+        / (I * (lr + lf))
+        * (
+            lr * C_Sr * (g * lf + u[high_v, 1] * h)
+            - lf * C_Sf * (g * lr - u[high_v, 1] * h)
+        )
+        * x[high_v, 6]
+        + mu
+        * m
+        / (I * (lr + lf))
+        * lf
+        * C_Sf
+        * (g * lr - u[high_v, 1] * h)
+        * x[high_v, 2]
+    )
+    f[high_v, 6] = (
+        (
+            mu
+            / (x[high_v, 3] ** 2 * (lr + lf))
+            * (
+                C_Sr * (g * lf + u[high_v, 1] * h) * lr
+                - C_Sf * (g * lr - u[high_v, 1] * h) * lf
+            )
+            - 1
+        )
+        * x[high_v, 5]
+        - mu
+        / (x[high_v, 3] * (lr + lf))
+        * (C_Sr * (g * lf + u[high_v, 1] * h) + C_Sf * (g * lr - u[high_v, 1] * h))
+        * x[high_v, 6]
+        + mu
+        / (x[high_v, 3] * (lr + lf))
+        * (C_Sf * (g * lr - u[high_v, 1] * h))
+        * x[high_v, 2]
+    )
 
     return f
 

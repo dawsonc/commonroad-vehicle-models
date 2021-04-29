@@ -1,10 +1,19 @@
 import unittest
+import random
+
+import torch
 
 from vehiclemodels.parameters_vehicle2 import parameters_vehicle2
 from vehiclemodels.parameters_vehicle4 import parameters_vehicle4
-from vehiclemodels.vehicle_dynamics_ks import vehicle_dynamics_ks
+from vehiclemodels.vehicle_dynamics_ks import (
+    vehicle_dynamics_ks,
+    torch_vehicle_dynamics_ks,
+)
 from vehiclemodels.vehicle_dynamics_mb import vehicle_dynamics_mb
-from vehiclemodels.vehicle_dynamics_st import vehicle_dynamics_st
+from vehiclemodels.vehicle_dynamics_st import (
+    vehicle_dynamics_st,
+    torch_vehicle_dynamics_st,
+)
 from vehiclemodels.vehicle_dynamics_kst import vehicle_dynamics_kst
 from vehiclemodels.vehicle_dynamics_std import vehicle_dynamics_std
 
@@ -190,6 +199,74 @@ class TestDerivatives(unittest.TestCase):
         f_mb = vehicle_dynamics_mb(x_mb, self.u, self.p)
         for i in range((len(f_mb))):
             self.assertAlmostEqual(f_mb[i], f_mb_gt[i])
+
+
+class TestTorchDerivatives(unittest.TestCase):
+    def setUp(self):
+        # Set a random seed for repeatability
+        random.seed(0)
+        torch.manual_seed(0)
+
+        # load parameters
+        self.p = parameters_vehicle2()
+
+    def test_ks(self):
+        N_test = 100
+
+        # Sample some random inputs
+        u = torch.Tensor(N_test, 2).uniform_(-1.0, 1.0)
+        u[:, 0] *= 2 * self.p.steering.v_max
+        u[:, 1] *= 2 * self.p.longitudinal.a_max
+
+        # states
+        # x1 = x-position in a global coordinate system
+        # x2 = y-position in a global coordinate system
+        # x3 = steering angle of front wheels
+        # x4 = velocity in x-direction
+        # x5 = yaw angle
+        x = torch.Tensor(N_test, 5).uniform_(-1.0, 1.0)
+        x[:, 0] *= 10
+        x[:, 1] *= 10
+        x[:, 2] *= 1.5 * self.p.steering.max
+        x[:, 3] *= 1.5 * self.p.longitudinal.v_max
+        x[:, 4] *= 10
+
+        # test
+        f_ks_torch = torch_vehicle_dynamics_ks(x, u, self.p)
+        for i in range(N_test):
+            f_ks = vehicle_dynamics_ks(x[i, :].tolist(), u[i, :].tolist(), self.p)
+
+            for dim in range(f_ks_torch.shape[-1]):
+                self.assertAlmostEqual(f_ks[dim], f_ks_torch[i, dim].item(), places=3)
+
+    def test_st(self):
+        N_test = 100
+
+        # Sample some random inputs
+        u = torch.Tensor(N_test, 2).uniform_(-1.0, 1.0)
+        u[:, 0] *= 2 * self.p.steering.v_max
+        u[:, 1] *= 2 * self.p.longitudinal.a_max
+
+        # states
+        # x1 = x-position in a global coordinate system
+        # x2 = y-position in a global coordinate system
+        # x3 = steering angle of front wheels
+        # x4 = velocity in x-direction
+        # x5 = yaw angle
+        x = torch.Tensor(N_test, 7).uniform_(-1.0, 1.0)
+        x[:, 0] *= 10
+        x[:, 1] *= 10
+        x[:, 2] *= 1.5 * self.p.steering.max
+        x[:, 3] *= 1.5 * self.p.longitudinal.v_max
+        x[:, 4] *= 10
+
+        # test
+        f_st_torch = torch_vehicle_dynamics_st(x, u, self.p)
+        for i in range(N_test):
+            f_st = vehicle_dynamics_st(x[i, :].tolist(), u[i, :].tolist(), self.p)
+
+            for dim in range(f_st_torch.shape[-1]):
+                self.assertAlmostEqual(f_st[dim], f_st_torch[i, dim].item(), places=3)
 
 
 if __name__ == "__main__":
